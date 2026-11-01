@@ -1,0 +1,6072 @@
+local slot78, createMobileKeybinds, slot28, camera2, slot106, slot92, slot67, slot56, Debris, slot34, slot22, slot9, createBallControlUI, followCharacter, findNearestBall, slot80, slot16, findPredictionBall, slot99, findNearestFollowBall, dragStartButtonPosition, slot58, isBallNearLegs, slot26, slot12, restoreFieldColors, slot90, slot40, slot19, slot77, slot69, slot38, slot27, slot14, slot98, slot91, dragStartPosition, slot73, applyAvatarFromUser, slot21, slot8, destroyMobileKeybinds, findDiveTarget, slot60, slot50, createTeleportUI, applyFieldColor, slot75, slot35, slot113, slot97, destroyBallControlUI, slot48, slot13, slot63, slot20, slot1, slot109, slot101, findControllableBall, slot114, slot51, slot93, slot4, slot62, slot105, findReachTargets, startBallControl, slot3, slot89, slot71, Players, slot29, slot107, slot83, slot57, slot33, slot112, slot96
+local handlers = {
+    ["appearance"] = {},
+    ["ball"] = {},
+    ["camera"] = {},
+    ["character"] = {},
+    ["curve"] = {},
+    ["follow"] = {},
+    ["goalkeeper"] = {},
+    ["input"] = {},
+    ["magnet"] = {},
+    ["mobile"] = {},
+    ["power"] = {},
+    ["reach"] = {},
+    ["shield"] = {},
+    ["teleport"] = {},
+    ["utility"] = {},
+    ["visuals"] = {},
+}
+local J
+local goalkeeperSettings
+local reachSettings
+local S
+local followButton
+local K
+local Workspace
+local autoActionSettings
+local reachTouchParts
+local toolCheckSettings
+local O
+local z
+local diveAnimations
+local r
+local Q
+local P
+local A
+local R
+local VirtualInputManager
+local g
+local reachBodyParts
+local teamCheckSettings
+local avatarSettings
+local o
+local X
+local Y
+local aa
+local camera
+local ad
+local af
+local followRootPart
+local Lighting
+local ai
+local followTarget
+local RunService
+local al
+local refreshReachBodyParts
+local op
+local ballCheckSettings
+local ap
+local skyboxSettings
+local ar
+local as
+local at
+local au
+local fieldColorSettings
+local curveSettings
+local isBallHeld
+local az
+local aA
+local playDiveAnimation
+local skyLingPower
+local localPlayer
+local aF
+local aG
+local shieldSettings
+local followHumanoid
+local ReplicatedStorage
+local aL
+local isFollowing
+local aO
+function handlers.appearance.applySkybox(g)
+    local aA, W, af, a3 = nil, nil, nil, nil
+    aA = Lighting
+    local Aa = aA.GetChildren
+    for o, f in ipairs(Aa(aA)) do
+        a3 = f
+        local aH = a3
+        aA = "Sky"
+        if aH.IsA(aH, "Sky") then
+            aA = "Destroy"
+            aH.Destroy(aH)
+        end
+    end
+    Aa = Instance
+    W = Aa.new
+    af = W("Sky")
+    af.SkyboxBk = g
+    af.SkyboxDn = g
+    af.SkyboxFt = g
+    af.SkyboxLf = g
+    af.SkyboxRt = g
+    af.SkyboxUp = g
+    Aa = Lighting
+    af.Parent = Aa
+    skyboxSettings[3] = af
+end
+function handlers.appearance.captureAvatar()
+    local mn = table.insert
+    local b7
+    local f_
+    local aP, aB, ad, aX, as, aw, a4, ah, X = nil, nil, nil, nil, nil, nil, nil, nil, nil
+    local vg = localPlayer
+    aB = vg.Character
+    if not aB then
+        return
+    else
+        ad = {}
+        as = {}
+        aw = {}
+        a4 = {
+            ["accessories"] = ad,
+            ["clothing"] = as,
+            ["bodyColors"] = nil,
+            ["characterMeshes"] = aw,
+            ["face"] = nil,
+            ["headMesh"] = nil,
+            ["bodyPartColors"] = {},
+        }
+        local u5 = aB.GetChildren
+        for j, q in ipairs(u5(aB)) do
+            ah = q
+            local aY = ah
+            if aY.IsA(aY, "Accessory") then
+                aP = mn
+                aX = a4.accessories
+                aP(aX, aY.Clone(aY))
+            else
+                if aY.IsA(aY, "Clothing") then
+                    aP = mn
+                    aX = a4.clothing
+                    aP(aX, aY.Clone(aY))
+                else
+                    if aY.IsA(aY, "ShirtGraphic") then
+                        aP = mn
+                        aX = a4.clothing
+                        aP(aX, aY.Clone(aY))
+                    else
+                        if aY.IsA(aY, "BodyColors") then
+                            ad = aY.Clone
+                            a4.bodyColors = ad(aY)
+                        else
+                            if aY.IsA(aY, "CharacterMesh") then
+                                aP = mn
+                                aX = a4.characterMeshes
+                                aP(aX, aY.Clone(aY))
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        aX = aB.FindFirstChild(aB, "Head")
+        if aX then
+            as = aX.FindFirstChildOfClass(aX, "Decal")
+            if as then
+                local uJ = as
+                ad = uJ.Clone
+                a4.face = ad(uJ)
+            end
+            as = aX.FindFirstChildOfClass(aX, "SpecialMesh")
+            if not not as then
+                local uG = as
+                ad = uG.Clone
+                a4.headMesh = ad(uG)
+            end
+        end
+        local uL = aB.GetChildren
+        for o, f in ipairs(uL(aB)) do
+            X = f
+            local ap = X
+            aB = "IsA"
+            ad = ap.IsA(ap, "BasePart")
+            if ad then
+                b7 = ap.Name
+                f_ = (b7 == "HumanoidRootPart")
+                ad = not f_
+            end
+            if ad then
+                aB = a4.bodyPartColors
+                aX = ap.Name
+                aB[aX] = ap.Color
+            end
+        end
+        avatarSettings[3] = a4
+    end
+end
+function handlers.appearance.captureFieldColors()
+    local aJ, a5, aG = nil, nil, nil
+    fieldColorSettings[3] = {}
+    aJ = Workspace
+    local v4 = aJ.GetDescendants
+    for q, e in ipairs(v4(aJ)) do
+        aG = e
+        local aE = aG
+        aJ = "BasePart"
+        a5 = aE.IsA(aE, "BasePart")
+        if a5 then
+            a5 = Y(aE)
+        end
+        if not not a5 then
+            aJ = fieldColorSettings[3]
+            aJ[aE] = aE.Color
+        end
+    end
+end
+function handlers.appearance.captureSkybox()
+    local aN, aL, aU, a6, aK, a_, a0, aG = nil, nil, nil, nil, nil, nil, nil, nil
+    aN = Lighting
+    local ur = aN.GetChildren
+    a0 = false
+    for e, o in ipairs(ur(aN)) do
+        aG = o
+        local aZ = aG
+        aN = "Sky"
+        if aZ.IsA(aZ, "Sky") then
+            local us = skyboxSettings
+            aN = "Bk"
+            aL = aZ.SkyboxBk
+            aU = aZ.SkyboxDn
+            a6 = aZ.SkyboxFt
+            aK = aZ.SkyboxLf
+            a_ = aZ.SkyboxRt
+            local uw = aZ.SkyboxUp
+            local ux = aL
+            local uy = aU
+            local uz = a6
+            local uA = aK
+            local uB = a_
+            us[4] = { ["Bk"] = ux, ["Dn"] = uy, ["Ft"] = uz, ["Lf"] = uA, ["Rt"] = uB, ["Up"] = uw }
+            a0 = true
+        end
+        if a0 then
+            break
+        end
+    end
+end
+function handlers.appearance.clearAvatar()
+    local Y, aJ, a5, W = nil, nil, nil, nil
+    local C2 = localPlayer
+    Y = C2.Character
+    if not Y then
+        return
+    else
+        local C6 = Y.GetChildren
+        for j, o in ipairs(C6(Y)) do
+            W = o
+            local a7 = W
+            a5 = a7.IsA(a7, "Accessory")
+            if not a5 then
+                a5 = a7.IsA(a7, "Clothing")
+            end
+            if not a5 then
+                a5 = a7.IsA(a7, "ShirtGraphic")
+            end
+            if not a5 then
+                a5 = a7.IsA(a7, "BodyColors")
+            end
+            if not a5 then
+                a5 = a7.IsA(a7, "CharacterMesh")
+            end
+            if a5 then
+                a7.Destroy(a7)
+            end
+        end
+        a5 = Y.FindFirstChild(Y, "Head")
+        if a5 then
+            aJ = a5.FindFirstChildOfClass(a5, "Decal")
+            if aJ then
+                aJ.Destroy(aJ)
+            end
+            aJ = a5.FindFirstChildOfClass(a5, "SpecialMesh")
+            if aJ then
+                aJ.Destroy(aJ)
+            end
+        end
+    end
+end
+function handlers.appearance.isFieldSurface(e)
+    local aA, aN, ab, X, av = nil, nil, nil, nil, nil
+    aA = e.Name
+    aN = aA.lower(aA)
+    if e.FindFirstAncestorOfClass(e, "Model") then
+        ab = e.FindFirstAncestorOfClass(e, "Model")
+        av = ab.Name
+        aA = av.lower(av)
+        X = aA.find(aA, "character")
+        if not X then
+            X = aA.find(aA, "player")
+        end
+        if X then
+            return false
+        else
+            aA = e.Parent
+            if aA then
+                ab = e.Parent
+                av = ab
+                aA = av.IsA(av, "Accessory")
+            end
+            if aA then
+                return false
+            else
+                aA = e.Parent
+                if aA then
+                    ab = e.Parent
+                    av = ab
+                    aA = av.IsA(av, "Tool")
+                end
+                if aA then
+                    return false
+                else
+                    ab = aN.find(aN, "grass")
+                    if not ab then
+                        ab = aN.find(aN, "ground")
+                    end
+                    if not ab then
+                        ab = aN.find(aN, "floor")
+                    end
+                    if not ab then
+                        ab = aN.find(aN, "terrain")
+                    end
+                    if not ab then
+                        ab = aN.find(aN, "rock")
+                    end
+                    if not ab then
+                        ab = aN.find(aN, "baseplate")
+                    end
+                    if not ab then
+                        ab = aN.find(aN, "tile")
+                    end
+                    if not ab then
+                        ab = aN.find(aN, "wall")
+                    end
+                    if not ab then
+                        ab = aN.find(aN, "brick")
+                    end
+                    if ab then
+                        return true
+                    else
+                        return false
+                    end
+                end
+            end
+        end
+    else
+        aA = e.Parent
+        if aA then
+            ab = e.Parent
+            av = ab
+            aA = av.IsA(av, "Accessory")
+        end
+        if aA then
+            return false
+        else
+            aA = e.Parent
+            if aA then
+                ab = e.Parent
+                av = ab
+                aA = av.IsA(av, "Tool")
+            end
+            if aA then
+                return false
+            else
+                ab = aN.find(aN, "grass")
+                if not ab then
+                    ab = aN.find(aN, "ground")
+                end
+                if not ab then
+                    ab = aN.find(aN, "floor")
+                end
+                if not ab then
+                    ab = aN.find(aN, "terrain")
+                end
+                if not ab then
+                    ab = aN.find(aN, "rock")
+                end
+                if not ab then
+                    ab = aN.find(aN, "baseplate")
+                end
+                if not ab then
+                    ab = aN.find(aN, "tile")
+                end
+                if not ab then
+                    ab = aN.find(aN, "wall")
+                end
+                if not ab then
+                    ab = aN.find(aN, "brick")
+                end
+                if ab then
+                    return true
+                else
+                    return false
+                end
+            end
+        end
+    end
+end
+function handlers.appearance.restoreAvatar()
+    local aS, ac, a1, aI, V, a_, ae, aA, aP, ap, ay, at, av, aV, aX, as, aO =
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    local B8 = localPlayer
+    ac = B8.Character
+    aS = not ac
+    if not aS then
+        aS = not avatarSettings[3]
+    end
+    if aS then
+        return
+    else
+        slot48()
+        aS = avatarSettings[3]
+        local Cb = ipairs
+        local Cc = aS.accessories
+        for q, e in Cb(Cc) do
+            ap = e
+            local aw = ap
+            aI = aw.Clone(aw)
+            a_ = aI.FindFirstChild(aI, "Handle")
+            if a_ then
+                ae = a_.FindFirstChildOfClass(a_, "Attachment")
+                if ae then
+                    V = ac:FindFirstChild(ae.Name, true)
+                    if V then
+                        aA = V.WorldCFrame
+                        a_.CFrame = aA
+                        aA = Instance.new
+                        aP = aA("Weld")
+                        aP.Name = "AccessoryWeld"
+                        aP.Part0 = a_
+                        aA = V.Parent
+                        aP.Part1 = aA
+                        aA = ae.CFrame
+                        aP.C0 = aA
+                        ae = V.CFrame
+                        aP.C1 = ae
+                        aP.Parent = a_
+                    end
+                end
+            end
+            aI.Parent = ac
+        end
+        Cc = ipairs
+        Cb = aS.clothing
+        for o, j in Cc(Cb) do
+            ay = j
+            local aH = ay
+            aI = aH.Clone(aH)
+            aI.Parent = ac
+        end
+        if aS.bodyColors then
+            aI = aS.bodyColors
+            V = aI.Clone(aI)
+            V.Parent = ac
+        end
+        local B3 = aS.characterMeshes
+        for f, g in ipairs(B3) do
+            at = g
+            local aF = at
+            aI = aF.Clone(aF)
+            aI.Parent = ac
+        end
+        V = ac.FindFirstChild(ac, "Head")
+        if not not V then
+            if aS.face then
+                aI = aS.face
+                a_ = aI.Clone(aI)
+                a_.Parent = V
+            end
+            aX = (if aS.headMesh then 1 else 0)
+            local B6 = (1 - aX)
+            av = ((287 * aX) + (3642 * B6))
+            B6 = (1 - aX)
+            aV = ((853 * aX) + (173 * B6))
+            local B7 = (av * aV)
+            if ((((av * 433) + (aV * 424)) + B7) % 16777213) == 730754 then
+                aI = aS.headMesh
+                a_ = aI.Clone(aI)
+                a_.Parent = V
+            end
+        end
+        local Ca = aS.bodyPartColors
+        for r, t in pairs(Ca) do
+            as = r
+            aO = t
+            local aB = as
+            local aR = aO
+            a1 = ac.FindFirstChild(ac, aB)
+            aS = a1
+            if aS then
+                aS = a1.IsA(a1, "BasePart")
+            end
+            if aS then
+                a1.Color = aR
+            end
+        end
+    end
+end
+function handlers.appearance.restoreSkybox()
+    local au, aR, aS, ac = nil, nil, nil, nil
+    if skyboxSettings[3] then
+        au = skyboxSettings[3]
+        au.Destroy(au)
+        skyboxSettings[3] = nil
+    end
+    if skyboxSettings[4] then
+        local CT = Instance
+        aR = CT.new
+        ac = aR("Sky")
+        au = skyboxSettings[4]
+        aS = au.Bk
+        ac.SkyboxBk = aS
+        au = skyboxSettings[4]
+        aS = au.Dn
+        ac.SkyboxDn = aS
+        au = skyboxSettings[4]
+        aS = au.Ft
+        ac.SkyboxFt = aS
+        au = skyboxSettings[4]
+        aS = au.Lf
+        ac.SkyboxLf = aS
+        au = skyboxSettings[4]
+        aS = au.Rt
+        ac.SkyboxRt = aS
+        au = skyboxSettings[4]
+        aS = au.Up
+        ac.SkyboxUp = aS
+        CT = Lighting
+        ac.Parent = CT
+    end
+end
+function handlers.appearance.setAvatarName(value)
+    avatarSettings[2] = value
+end
+function handlers.appearance.setAvatarStolenEnabled(enabled)
+    local aG = nil
+    if enabled then
+        if avatarSettings[2] == "" then
+            return
+        else
+            slot99()
+            aG, au = applyAvatarFromUser(avatarSettings[2])
+            if aG then
+                avatarSettings[1] = true
+            end
+        end
+    else
+        slot98()
+        avatarSettings[1] = false
+    end
+end
+function handlers.appearance.setColorEnabled(enabled)
+    if enabled then
+        slot38()
+        applyFieldColor(fieldColorSettings[1])
+        fieldColorSettings[2] = true
+    else
+        restoreFieldColors()
+        fieldColorSettings[2] = false
+    end
+end
+function handlers.appearance.setColorGram(value)
+    fieldColorSettings[1] = value
+end
+function handlers.appearance.setSkyboxChanger(value)
+    skyboxSettings[1] = value
+end
+function handlers.appearance.setSkyboxChangerEnabled(enabled)
+    local Z
+    if enabled then
+        Z = slot91[skyboxSettings[1]]
+        if Z then
+            slot1(Z)
+            skyboxSettings[2] = true
+        end
+    else
+        slot22()
+        skyboxSettings[2] = false
+    end
+end
+function handlers.ball.hasNoGroundBelow(e)
+    local j = e.Position
+    local Bw = Vector3
+    local q = Bw.new(0, -5, 0)
+    Bw = RaycastParams
+    local o = Bw.new()
+    o.FilterDescendantsInstances = { e }
+    Bw = Enum
+    local Bx = Bw.RaycastFilterType
+    local By = Bx.Exclude
+    o.FilterType = By
+    By = workspace
+    local g = By.Raycast(By, j, q, o)
+    return (g == nil)
+end
+function handlers.ball.hasShootingTool()
+    local aN, aq = nil, nil
+    local v_ = localPlayer
+    aN = v_.Character
+    if not aN then
+        return false
+    else
+        aq = aN.FindFirstChildOfClass(aN, "Tool")
+        if not aq then
+            return false
+        else
+            local v1 = aq.Name
+            aN = (v1 == "Long")
+            if not aN then
+                aN = (aq.Name == "Shoot")
+            end
+            return aN
+        end
+    end
+end
+function handlers.ball.isAirborne(o)
+    local v8 = RaycastParams
+    local e = v8.new()
+    v8 = Enum
+    local wa = v8.RaycastFilterType
+    local wb = wa.Exclude
+    e.FilterType = wb
+    e.FilterDescendantsInstances = { o }
+    wb = Workspace
+    wa = o.Position
+    v8 = Vector3
+    return (wb:Raycast(wa, v8.new(0, -4, 0), e) == nil)
+end
+function handlers.ball.isValidBall(f)
+    local aX
+    aX = f
+    if aX then
+        aX = f.Parent
+    end
+    if aX then
+        aX = f.IsA(f, "BasePart")
+    end
+    if aX then
+        local BU = f.Name
+        aX = (BU == "TPS")
+    end
+    if aX then
+        local BV = Workspace
+        aX = f.IsDescendantOf(f, BV)
+    end
+    return aX
+end
+function handlers.camera.disconnectStretch()
+    local a1
+    if as then
+        a1 = as
+        a1.Disconnect(a1)
+        as = nil
+    end
+end
+function handlers.camera.enableStretch()
+    local ap, aW = nil, nil
+    ap = (if as then 1935 else 1340)
+    aW = (if as then 1376 else 2743)
+    local D_ = (if as then 2662560 else 3675620)
+    if ((((ap * 2474) + (aW * 3919)) + D_) % 16777213) == 12842294 then
+        return
+    else
+        local D0 = RunService
+        as = D0.RenderStepped:Connect(function()
+            local D1 = camera2
+            local D2 = camera2
+            local D5 = D2.CFrame
+            local D8 = slot73
+            local D7 = CFrame.new(0, 0, 0, 1, 0, 0, 0, D8, 0, 0, 0, 1)
+            local Ek = CFrame.new
+            D1.CFrame = (D5 * D7)
+        end)
+    end
+end
+function handlers.camera.setStretchedResolution(value)
+    if value <= 0 then
+        value = 1
+    end
+    slot73 = (value / 100)
+end
+function handlers.camera.setStretchedScreenEnabled(enabled)
+    if enabled then
+        slot58()
+    else
+        slot77()
+    end
+end
+function handlers.character.getCharacter()
+    local ag, aQ = nil, nil
+    local xV = localPlayer
+    ag = xV.Character
+    if not ag then
+        local xW = localPlayer
+        aQ = xW.CharacterAdded
+        ag = aQ.Wait(aQ)
+    end
+    return ag
+end
+function handlers.character.waitForRootPart(o)
+    ai = o.WaitForChild(o, "HumanoidRootPart")
+end
+function handlers.curve.createTargetMarker(g)
+    local CA
+    slot21()
+    CA = Instance
+    local CC = CA.new
+    local o = CC("Part")
+    o.Name = "TPS_Target"
+    CC = Enum
+    CA = CC.PartType
+    local CD = CA.Ball
+    o.Shape = CD
+    CD = Vector3
+    CA = CD.new
+    local CF
+    o.Size = CA(0.7, 0.7, 0.7)
+    CA = Color3
+    CF = CA.fromRGB
+    o.Color = CF(255, 0, 0)
+    CF = Enum
+    CD = CF.Material
+    CC = CD.Neon
+    o.Material = CC
+    o.Anchored = true
+    o.CanCollide = false
+    o.CanTouch = false
+    o.CanQuery = false
+    o.Position = g
+    CC = Workspace
+    o.Parent = CC
+    curveSettings[6] = o
+end
+function handlers.curve.destroyCurveMarker()
+    local aH, aQ, aJ, aI = nil, nil, nil, nil
+    aI = (if curveSettings[6] then 1 else 0)
+    local C8 = (1 - aI)
+    aQ = ((2661 * aI) + (2873 * C8))
+    C8 = (1 - aI)
+    aJ = ((1450 * aI) + (3771 * C8))
+    local C9 = (aQ * aJ)
+    if ((((aQ * 1207) + (aJ * 3167)) + C9) % 16777213) == 11662427 then
+        aH = curveSettings[6]
+        aH.Destroy(aH)
+        curveSettings[6] = nil
+    end
+end
+function handlers.curve.destroyTargetMarker()
+    local aP
+    if aG then
+        aP = aG
+        aP.Destroy(aP)
+        aG = nil
+    end
+end
+function handlers.curve.onMouseInput(f, o)
+    local au, ad = nil, nil
+    if o then
+        return
+    else
+        au = f.UserInputType
+        ad = Enum.UserInputType
+        ad = (au == ad.MouseButton1)
+        if ad then
+            ad = curveSettings[1]
+        end
+        if ad then
+            local wE = slot27
+            wE(f.Position)
+        end
+    end
+end
+function handlers.curve.onTouchInput(e, q)
+    local Z
+    if q then
+        return
+    else
+        Z = curveSettings[1]
+        if Z then
+            Z = e[1]
+        end
+        if Z then
+            slot27(e[1])
+        end
+    end
+end
+function handlers.curve.screenPositionToWorld(e)
+    local aZ, ai, ar, Y = nil, nil, nil, nil
+    if curveSettings[5] then
+        return
+    else
+        local Bm = camera
+        aZ = e.X
+        local Bn = e.Y
+        local Bo = aZ
+        ar = Bm:ViewportPointToRay(Bo, Bn)
+        Bn = RaycastParams
+        aZ = Bn.new()
+        Bn = Enum
+        ai = Bn.RaycastFilterType
+        Y = ai.Exclude
+        aZ.FilterType = Y
+        Bn = localPlayer
+        if Bn.Character then
+            local Bl = localPlayer
+            ai = { Bl.Character }
+            aZ.FilterDescendantsInstances = ai
+        end
+        local Bh = Workspace
+        ai = ar.Origin
+        local Bi = (ar.Direction * 1000)
+        local Bj = aZ
+        local Bk = ai
+        Y = Bh:Raycast(Bk, Bi, Bj)
+        if not Y then
+            return
+        else
+            local Bf = curveSettings
+            Bf[4] = Y.Position
+            curveSettings[5] = true
+            Bf = slot28
+            Bf(Y.Position)
+        end
+    end
+end
+function handlers.curve.setBallCurveChangerEnabled(enabled)
+    curveSettings[1] = enabled
+    curveSettings[5] = false
+    if not enabled then
+        slot21()
+    end
+end
+function handlers.curve.setCurveForce(value)
+    curveSettings[3] = value
+end
+function handlers.curve.setCurveSpeed(value)
+    curveSettings[2] = value
+end
+function handlers.follow.clearTarget()
+    isFollowing = false
+    followTarget = nil
+    slot19()
+end
+function handlers.follow.onCharacterAdded(j)
+    followCharacter = j
+    local vk = followCharacter
+    followHumanoid = vk.WaitForChild(vk, "Humanoid")
+    vk = followCharacter
+    followRootPart = vk.WaitForChild(vk, "HumanoidRootPart")
+    isFollowing = false
+    followTarget = nil
+    slot19()
+end
+function handlers.follow.onDragChanged(e)
+    local a7, aQ, a4 = nil, nil, nil
+    a7 = e.UserInputType
+    aQ = Enum.UserInputType
+    aQ = (a7 == aQ.MouseMovement)
+    if not aQ then
+        a7 = e.UserInputType
+        a4 = Enum.UserInputType
+        aQ = (a7 == a4.Touch)
+    end
+    if aQ then
+        slot78 = e
+    end
+end
+function handlers.follow.onDragStarted(f)
+    local ag, aD, aG = nil, nil, nil
+    ag = f.UserInputType
+    aD = Enum.UserInputType
+    aD = (ag == aD.MouseButton1)
+    if not aD then
+        ag = f.UserInputType
+        aG = Enum.UserInputType
+        aD = (ag == aG.Touch)
+    end
+    if aD then
+        Q = true
+        X = false
+        slot92 = f.Position
+        local wu = skyLingPower
+        au = wu.Position
+    end
+end
+function handlers.follow.setAutoBallDistance(value)
+    slot60 = value
+end
+function handlers.follow.setAutoBallEnabled(enabled)
+    local a1
+    local wo = slot40
+    wo.Enabled = enabled
+    a1 = not enabled
+    if a1 then
+        a1 = isFollowing
+    end
+    if a1 then
+        ap()
+    end
+end
+function handlers.follow.startFollowingNearestBall()
+    local Z
+    Z = findNearestFollowBall()
+    if not Z then
+        return
+    else
+        followTarget = Z
+        isFollowing = true
+        slot19()
+    end
+end
+function handlers.follow.toggleFollowing()
+    if isFollowing then
+        ap()
+    else
+        slot90()
+    end
+end
+function handlers.follow.updateButtonPosition(g)
+    local f = (g.Position - dragStartPosition)
+    local vs = followButton
+    local vu = UDim2.new
+    local vv = dragStartButtonPosition
+    local vw = vv.X
+    local vx = vw.Scale
+    local vy = dragStartButtonPosition
+    local vz = vy.X
+    local vC = vz.Offset
+    local vD = f.X
+    local vE = dragStartButtonPosition
+    local vI = vE.Y
+    local vM = vI.Scale
+    local vN = dragStartButtonPosition
+    local vO = vN.Y
+    local vP = vO.Offset
+    local vQ = f.Y
+    vs.Position = vu(vx, (vC + vD), vM, (vP + vQ))
+end
+function handlers.follow.updateButtonState()
+    local aE
+    if isFollowing then
+        local De = followButton
+        De.Text = "On"
+        De = followButton
+        local Df = Color3
+        aE = Df.fromRGB
+        De.BackgroundColor3 = aE(80, 170, 255)
+        De = slot8
+        Df = Color3
+        aE = Df.fromRGB
+        De.Color = aE(180, 230, 255)
+    else
+        local Dc = followButton
+        Dc.Text = "Follow"
+        Dc = followButton
+        local Dd = Color3
+        aE = Dd.fromRGB
+        Dc.BackgroundColor3 = aE(135, 206, 250)
+        Dc = slot8
+        Dd = Color3
+        aE = Dd.fromRGB
+        Dc.Color = aE(180, 230, 255)
+    end
+end
+function handlers.follow.updateMovement()
+    local aC, au, ab, a5, aD = nil, nil, nil, nil, nil
+    if not isFollowing then
+        return
+    else
+        aC = not followCharacter
+        if not aC then
+            local zV = followCharacter
+            aC = not zV.Parent
+        end
+        if aC then
+            return
+        else
+            aC = not followHumanoid
+            if not aC then
+                local zW = followHumanoid
+                aC = (zW.Health <= 0)
+            end
+            if aC then
+                return
+            else
+                aC = not followRootPart
+                if not aC then
+                    local zY = followRootPart
+                    aC = not zY.Parent
+                end
+                if not not aC then
+                    return
+                else
+                    if not slot26(followTarget) then
+                        ap()
+                        return
+                    else
+                        local zN = followTarget
+                        au = zN.Position
+                        zN = followRootPart
+                        ab = (au - zN.Position)
+                        zN = Vector3
+                        au = zN.new
+                        a5 = ab.X
+                        zN = ab.Z
+                        aD = au(a5, 0, zN)
+                        aC = (slot60 > 0)
+                        if aC then
+                            aC = (aD.Magnitude <= slot60)
+                        end
+                        if aC then
+                            return
+                        else
+                            local zM = followHumanoid
+                            au = zM.MoveDirection
+                            if au.Magnitude > 0.05 then
+                                return
+                            else
+                                au = aD.Unit
+                                aC = followHumanoid
+                                aC.Move(aC, au, false)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+function handlers.goalkeeper.catchBall(g)
+    local az, a0, aC, at, a7, ad = nil, nil, nil, nil, nil, nil
+    if not g then
+        return
+    else
+        local Cj = localPlayer
+        a0 = Cj.Character
+        if not a0 then
+            return
+        else
+            at = a0.FindFirstChild(a0, "HumanoidRootPart")
+            if not at then
+                return
+            else
+                a0 = g.Position
+                a7 = (a0 - at.Position)
+                a0 = a7.Magnitude
+                aC = g.AssemblyLinearVelocity
+                a7 = (g.Position + (aC * goalkeeperSettings[15]))
+                aC = (a7 - at.Position)
+                ad = aC.Magnitude
+                az = (a0 <= 8)
+                a0 = (ad <= 8)
+                aC = not a0
+                at = not az
+                if at then
+                    at = aC
+                end
+                if at then
+                    return
+                else
+                    local Cp = os
+                    if (Cp.clock() - goalkeeperSettings[6]) < goalkeeperSettings[16] then
+                        return
+                    else
+                        local Cr = ReplicatedStorage
+                        a0 = Cr
+                        at = a0.FindFirstChild(a0, "CatchBall")
+                        az = at
+                        if az then
+                            az = at.IsA(at, "RemoteEvent")
+                        end
+                        if not not az then
+                            local Cs = goalkeeperSettings
+                            local Ct = os
+                            Cs[6] = Ct.clock()
+                            at.FireServer(at, g)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+function handlers.goalkeeper.classifyBallDirection(q, j)
+    local ax, aa, Y, aL, aw, aZ, aX = nil, nil, nil, nil, nil, nil, nil
+    aa = q.AssemblyLinearVelocity
+    Y = aa.Magnitude
+    if Y < goalkeeperSettings[11] then
+        return nil
+    else
+        Y = j.Position
+        aw = (Y - q.Position)
+        if aw.Magnitude <= 0 then
+            return nil
+        else
+            Y = aw.Unit
+            aL = aa.Unit
+            aa = aL.Dot(aL, Y)
+            if aa < 0.35 then
+                return nil
+            else
+                aa = q.Position
+                aL = (aa - j.Position)
+                aa = j.CFrame
+                aa = aL:Dot(aa.RightVector)
+                Y = j.CFrame
+                Y = aL:Dot(Y.LookVector)
+                aL = q.Position
+                aZ = aL.Y
+                aX = j.Position
+                aX = (aZ - aX.Y)
+                if aX <= goalkeeperSettings[13] then
+                    aZ = "Low"
+                else
+                    if aX <= goalkeeperSettings[14] then
+                        aZ = "Mid"
+                    else
+                        aZ = "High"
+                    end
+                end
+                ax = (math.abs(aa) <= goalkeeperSettings[12])
+                if not not ax then
+                    ax = (Y > 0)
+                end
+                if ax then
+                    return "Front", aZ
+                else
+                    if aa > goalkeeperSettings[12] then
+                        return "Right", aZ
+                    else
+                        if aa < -goalkeeperSettings[12] then
+                            return "Left", aZ
+                        else
+                            return nil
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+function handlers.goalkeeper.hasGoalkeeperTool()
+    local eH
+    local pK
+    local Y, aU = nil, nil
+    local wi = localPlayer
+    Y = wi.Character
+    if not Y then
+        return false
+    else
+        aU = Y.FindFirstChildOfClass(Y, "Tool")
+        if not aU then
+            return false
+        else
+            pK = aU.Name
+            eH = (pK == "GK")
+            Y = eH
+            if not Y then
+                local wl = aU.Name
+                Y = (wl == "Gk")
+            end
+            return Y
+        end
+    end
+end
+function handlers.goalkeeper.hasTackleTool()
+    local ab, aU, ay = nil, nil, nil
+    local xd = localPlayer
+    aU = xd.Character
+    if not aU then
+        return false
+    else
+        ay = aU.FindFirstChildOfClass(aU, "Tool")
+        ab = ay
+        if ab then
+            local xc = ay.Name
+            ab = (xc == "Tackle")
+        end
+        return ab
+    end
+end
+function handlers.goalkeeper.passesTeamCheck()
+    local aK, ak, ar = nil, nil, nil
+    if not teamCheckSettings[1] then
+        return true
+    else
+        aK = localPlayer
+        ak = aK.Team
+        if not ak then
+            return false
+        else
+            local An = teamCheckSettings
+            local Ao = An[2]
+            for o, j in ipairs(Ao) do
+                ar = j
+                local a_ = ar
+                if ak.Name == a_ then
+                    return true
+                end
+            end
+            return false
+        end
+    end
+end
+function handlers.goalkeeper.passesToolCheck()
+    local ah, aF, aq = nil, nil, nil
+    if not toolCheckSettings[1] then
+        return true
+    else
+        local yj = localPlayer
+        ah = yj.Character
+        if not ah then
+            return false
+        else
+            aF = ah.FindFirstChildOfClass(ah, "Tool")
+            if not aF then
+                return false
+            else
+                local yf = toolCheckSettings
+                local yg = yf[2]
+                for e, q in ipairs(yg) do
+                    aq = q
+                    local al = aq
+                    if aF.Name == al then
+                        return true
+                    end
+                end
+                return false
+            end
+        end
+    end
+end
+function handlers.goalkeeper.performDive(e, q, j)
+    local n3 = math.huge
+    local tV
+    local el
+    local rV
+    local m5
+    local aV, ac, au, W, Y, aM, ah, al, aa, aY, ag = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    if goalkeeperSettings[5] then
+        return
+    else
+        local Dv = os
+        if (Dv.clock() - goalkeeperSettings[4]) < goalkeeperSettings[3] then
+            return
+        else
+            aV = slot106()
+            W = aV.FindFirstChildOfClass(aV, "Humanoid")
+            Y = aV.FindFirstChild(aV, "HumanoidRootPart")
+            aV = not Y
+            ac = not W
+            if not ac then
+                ac = aV
+            end
+            aV = not e
+            au = ac
+            if not au then
+                au = aV
+            end
+            if au then
+                return
+            else
+                goalkeeperSettings[5] = true
+                local Dz = goalkeeperSettings
+                local DA = os
+                Dz[4] = DA.clock()
+                Dz = workspace
+                ac = Dz.CurrentCamera
+                if ac then
+                    au = ac.CFrame
+                    ah = au.LookVector
+                    local Du = CFrame
+                    ac = Du.new
+                    aM = Y.Position
+                    al = Y.Position
+                    Du = Vector3
+                    aa = Du.new
+                    aY = ah.X
+                    Du = ah.Z
+                    ag = (al + aa(aY, 0, Du))
+                    Y.CFrame = ac(aM, ag)
+                end
+                local Dw = Vector3
+                ac = Dw.zero
+                Y.AssemblyAngularVelocity = ac
+                Dw = Instance
+                ac = Dw.new
+                aM = ac("BodyVelocity")
+                aM.Parent = Y
+                el = q
+                tV = (el == "Right")
+                if tV then
+                    ah = Y.CFrame
+                    ac = (ah.RightVector * goalkeeperSettings[8])
+                else
+                    ah = Y.CFrame
+                    ac = (ah.RightVector * -goalkeeperSettings[8])
+                end
+                if j == "Low" then
+                    ah = Y.CFrame
+                    aV = (ah.UpVector * goalkeeperSettings[9])
+                else
+                    ah = Y.CFrame
+                    aV = (ah.UpVector * goalkeeperSettings[10])
+                end
+                au = (ac + aV)
+                aM.Velocity = au
+                local DK = Vector3
+                ac = DK.new
+                au = n3
+                Y = n3
+                aM.MaxForce = ac(au, 9999, Y)
+                Debris:AddItem(aM, goalkeeperSettings[7])
+                DK = (q == "Right")
+                aV = (j == "Low")
+                ac = DK
+                if ac then
+                    ac = aV
+                end
+                if not not ac then
+                    playDiveAnimation(W, e, diveAnimations[1])
+                else
+                    local DR = (q == "Left")
+                    aV = (j == "Low")
+                    ac = DR
+                    if ac then
+                        ac = aV
+                    end
+                    if ac then
+                        playDiveAnimation(W, e, diveAnimations[2])
+                    else
+                        local Dr = (q == "Right")
+                        aV = (j == "Mid")
+                        ac = Dr
+                        if ac then
+                            ac = aV
+                        end
+                        if ac then
+                            playDiveAnimation(W, e, diveAnimations[3])
+                        else
+                            local Do = (q == "Left")
+                            aV = (j == "Mid")
+                            ac = Do
+                            if ac then
+                                ac = aV
+                            end
+                            if ac then
+                                playDiveAnimation(W, e, diveAnimations[4])
+                            else
+                                rV = q
+                                m5 = (rV == "Right")
+                                aV = (j == "High")
+                                ac = m5
+                                if ac then
+                                    ac = aV
+                                end
+                                if ac then
+                                    playDiveAnimation(W, e, diveAnimations[3])
+                                else
+                                    local DF = (q == "Left")
+                                    aV = (j == "High")
+                                    ac = DF
+                                    if ac then
+                                        ac = aV
+                                    end
+                                    if ac then
+                                        playDiveAnimation(W, e, diveAnimations[4])
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+                task.delay(goalkeeperSettings[7], function()
+                    goalkeeperSettings[5] = false
+                end)
+            end
+        end
+    end
+end
+function handlers.goalkeeper.setAutoCatchEnabled(enabled)
+    slot67 = enabled
+    z = 0
+end
+function handlers.goalkeeper.setAutoDiveDelay(value)
+    goalkeeperSettings[3] = value
+end
+function handlers.goalkeeper.setAutoDiveEnabled(enabled)
+    goalkeeperSettings[1] = enabled
+    goalkeeperSettings[4] = 0
+end
+function handlers.goalkeeper.setAutoDiveStuds(value)
+    goalkeeperSettings[2] = value
+end
+function handlers.goalkeeper.setBallCheckEnabled(enabled)
+    ballCheckSettings[1] = enabled
+    if enabled then
+        if isBallNearLegs() then
+            goalkeeperSettings[1] = false
+            goalkeeperSettings[5] = false
+        end
+    end
+end
+function handlers.goalkeeper.setCatchDistance(value)
+    az = value
+end
+function handlers.goalkeeper.setCooldown(value)
+    aa = value
+end
+function handlers.goalkeeper.setTeamCheckEnabled(enabled)
+    teamCheckSettings[1] = enabled
+end
+function handlers.goalkeeper.setToolCheckEnabled(enabled)
+    toolCheckSettings[1] = enabled
+end
+function handlers.goalkeeper.updateAutoDive()
+    local aZ, af, V, aQ, aP, an, aj, aF = nil, nil, nil, nil, nil, nil, nil, nil
+    if not goalkeeperSettings[1] then
+        return
+    else
+        if goalkeeperSettings[5] then
+            return
+        else
+            local w7 = os
+            aF = (if (w7.clock() - goalkeeperSettings[4]) < goalkeeperSettings[3] then 1 else 0)
+            w7 = (1 - aF)
+            an = ((3716 * aF) + (2677 * w7))
+            w7 = (1 - aF)
+            aj = ((4027 * aF) + (859 * w7))
+            local w8 = (an * aj)
+            if ((((an * 2303) + (aj * 1835)) + w8) % 16777213) == 14134612 then
+                return
+            else
+                if not slot109() then
+                    return
+                else
+                    if not slot9() then
+                        return
+                    else
+                        local w9 = localPlayer
+                        af = w9.Character
+                        if not af then
+                            return
+                        else
+                            V = "FindFirstChild"
+                            aQ = af.FindFirstChild(af, "HumanoidRootPart")
+                            if not aQ then
+                                return
+                            else
+                                aZ = findDiveTarget()
+                                if not aZ then
+                                    return
+                                else
+                                    if isBallHeld(aZ) then
+                                        return
+                                    else
+                                        V, af = slot80(aZ, aQ)
+                                        aQ = not af
+                                        aP = not V
+                                        if not aP then
+                                            aP = aQ
+                                        end
+                                        if aP then
+                                            return
+                                        else
+                                            slot13(aZ, V, af)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+function handlers.goalkeeper.updateBallProximityCheck()
+    local U, aE, a6 = nil, nil, nil
+    if not ballCheckSettings[1] then
+        return
+    else
+        a6 = (if not goalkeeperSettings[1] then 1 else 0)
+        local yc = (1 - a6)
+        U = ((2620 * a6) + (2888 * yc))
+        yc = (1 - a6)
+        aE = ((3861 * a6) + (1326 * yc))
+        local yd = (U * aE)
+        if ((((U * 1248) + (aE * 372)) + yd) % 16777213) == 14821872 then
+            return
+        else
+            if isBallNearLegs() then
+                goalkeeperSettings[1] = false
+                goalkeeperSettings[5] = false
+            end
+        end
+    end
+end
+function handlers.input.onAutoActionKey(q, o)
+    local aQ
+    if o then
+        return
+    else
+        aQ = q.KeyCode
+        local vW = autoActionSettings
+        if aQ == vW.ToggleKey then
+            local vV = autoActionSettings
+            aQ = vV.armed
+            if aQ then
+                aQ = slot50()
+            end
+            if aQ then
+                local vT = slot12
+                local vU = autoActionSettings
+                vT(not vU.isActive)
+            end
+        end
+    end
+end
+function handlers.input.setAutoActionActive(value)
+    local aX, as, aA, Y, aj = nil, nil, nil, nil, nil
+    local xG = autoActionSettings
+    xG.isActive = value
+    if value then
+        as = (if aL then 3474 else 51)
+        aA = (if aL then 1785 else 2875)
+        local xF = (if aL then 6201090 else 146625)
+        if ((((as * 573) + (aA * 3981)) + xF) % 16777213) == 15297777 then
+            aX = aL
+            aX.Disconnect(aX)
+        end
+        local xj = RunService
+        aL = xj.Heartbeat:Connect(function()
+            local aD, aI, V, a4, az, aE = nil, nil, nil, nil, nil, nil
+            local xC = autoActionSettings
+            local xD = xC.isActive
+            aI = not ai
+            V = not xD
+            if not V then
+                V = aI
+            end
+            if V then
+                return
+            else
+                if not slot50() then
+                    return
+                else
+                    aD = Workspace
+                    local xn = aD.GetChildren
+                    az = false
+                    for o, g in pairs(xn(aD)) do
+                        aE = g
+                        local ak = aE
+                        aD = "Name"
+                        aI = ak.Name
+                        local xo = autoActionSettings
+                        a4 = (aI == xo.TargetName)
+                        if a4 then
+                            aD = "BasePart"
+                            a4 = ak.IsA(ak, "BasePart")
+                        end
+                        if a4 then
+                            aD = "Position"
+                            aI = ak.Position
+                            local xw = ai
+                            a4 = (aI - xw.Position)
+                            aI = a4.Magnitude
+                            xw = autoActionSettings
+                            if aI <= xw.ActivationDistance then
+                                local xp = VirtualInputManager
+                                local xq = autoActionSettings
+                                xp:SendKeyEvent(true, xq.ActionKey, false, game)
+                                xp = task
+                                aI = xp.wait
+                                xp = autoActionSettings
+                                xq = xp.ClickInterval
+                                aI(xq)
+                                xq = VirtualInputManager
+                                xp = autoActionSettings
+                                aD = "ActionKey"
+                                xq:SendKeyEvent(false, xp.ActionKey, false, game)
+                                az = true
+                            end
+                        end
+                        if az then
+                            break
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        Y = (if aL then 3472 else 348)
+        aj = (if aL then 3369 else 3318)
+        local xi = (if aL then 11697168 else 1154664)
+        if ((((Y * 322) + (aj * 2828)) + xi) % 16777213) == 5565471 then
+            aX = aL
+            aX.Disconnect(aX)
+            aL = nil
+        end
+    end
+end
+function handlers.input.setAutoHamboloPCEnabled(enabled)
+    local Ah = autoActionSettings
+    Ah.armed = enabled
+    if not enabled then
+        slot12(false)
+    end
+end
+function handlers.magnet.clearTarget()
+    g = nil
+end
+function handlers.magnet.setMagnetBallEnabled(enabled)
+    al = enabled
+end
+function handlers.magnet.setMagnetSpeed(value)
+    slot69 = value
+end
+function handlers.magnet.updateBallForce()
+    local a3, aV, af, aZ, aj = nil, nil, nil, nil, nil
+    if not al then
+        return
+    else
+        local yB = localPlayer
+        aV = yB.Character
+        if not aV then
+            return
+        else
+            af = aV.FindFirstChild(aV, "HumanoidRootPart")
+            if not af then
+                return
+            else
+                a3 = not g
+                if not a3 then
+                    local yJ = g
+                    a3 = not yJ.Parent
+                end
+                if not a3 then
+                    local yN = Workspace
+                    aV = g
+                    a3 = (not aV.IsDescendantOf(aV, yN))
+                end
+                if a3 then
+                    g = findNearestBall(af)
+                end
+                if not g then
+                    return
+                else
+                    local yA = g
+                    if yA.Anchored then
+                        local yy = g
+                        yy.Anchored = false
+                    end
+                    local yH = g
+                    aV = yH
+                    aZ = aV.FindFirstChild(aV, "MyMagnetAttachment")
+                    if not aZ then
+                        local yD = Instance
+                        aV = yD.new
+                        aZ = aV("Attachment")
+                        aZ.Name = "MyMagnetAttachment"
+                        yD = g
+                        aZ.Parent = yD
+                    end
+                    local yp = g
+                    aV = yp
+                    aj = aV.FindFirstChild(aV, "MyMagnetForce")
+                    if not aj then
+                        local yq = Instance
+                        aV = yq.new
+                        aj = aV("VectorForce")
+                        aj.Name = "MyMagnetForce"
+                        aj.Attachment0 = aZ
+                        yq = Enum
+                        aV = yq.ActuatorRelativeTo
+                        aZ = aV.World
+                        aj.RelativeTo = aZ
+                        aj.ApplyAtCenterOfMass = true
+                        yq = g
+                        aj.Parent = yq
+                    end
+                    aV = af.Position
+                    local yK = g
+                    aZ = (aV - yK.Position)
+                    if aZ.Magnitude > 0.1 then
+                        aV = (aZ.Unit * slot69)
+                        local yx = g
+                        af = (aV * yx.AssemblyMass)
+                        aj.Force = af
+                    else
+                        aV = Vector3.zero
+                        aj.Force = aV
+                    end
+                end
+            end
+        end
+    end
+end
+function handlers.mobile.setControlBallMobileEnabled(enabled)
+    if enabled then
+        createBallControlUI()
+    else
+        destroyBallControlUI()
+    end
+end
+function handlers.mobile.setTotMobileEnabled(enabled)
+    if enabled then
+        createMobileKeybinds()
+    else
+        destroyMobileKeybinds()
+    end
+end
+function handlers.mobile.stopBallControl()
+    local aC, a5, ah = nil, nil, nil
+    at = false
+    if O then
+        aC = O
+        aC.Disconnect(aC)
+        O = nil
+    end
+    if S then
+        aC = S
+        aC.Disconnect(aC)
+        S = nil
+    end
+    local Dk = camera
+    local Dl = slot20
+    Dk.CameraType = Dl
+    Dl = camera
+    Dk = slot35
+    Dl.CameraSubject = Dk
+    if r then
+        local Dj = r
+        a5 = Dj
+        ah = a5.FindFirstChild(a5, "SkyLing")
+        if ah then
+            a5 = Color3.fromRGB
+            ah.BackgroundColor3 = a5(137, 207, 240)
+            ah.Text = "SkyLing"
+        end
+    end
+    o = nil
+end
+function handlers.power.onButtonInput(f)
+    local as, ai, a1, ar, au = nil, nil, nil, nil, nil
+    as = f.UserInputType
+    ai = Enum.UserInputType
+    ai = (as == ai.MouseButton1)
+    if not ai then
+        as = f.UserInputType
+        a1 = Enum.UserInputType
+        ai = (as == a1.Touch)
+    end
+    if ai then
+        Q = false
+        if not X then
+            K = not K
+            ar = (if K then 2281 else 2953)
+            au = (if K then 3319 else 1567)
+            local wZ = (if K then 7570639 else 4627351)
+            if ((((ar * 3985) + (au * 1849)) + wZ) % 16777213) == 6020042 then
+                local w1 = skyLingPower
+                as = Color3.fromRGB
+                w1.BackgroundColor3 = as(70, 160, 220)
+                w1 = skyLingPower
+                w1.Text = "SkyLing ON"
+            else
+                local w_ = skyLingPower
+                as = Color3.fromRGB
+                w_.BackgroundColor3 = as(135, 206, 250)
+                w_ = skyLingPower
+                w_.Text = "SkyLing"
+            end
+        end
+    end
+end
+function handlers.power.onDragInput(g)
+    local cc = math.abs
+    local aQ, aS, aN, aJ, av, aI, ax, a7, aW, a5, aZ, ap, am, ah =
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    aQ = Q
+    if aQ then
+        aN = g.UserInputType
+        aJ = Enum.UserInputType
+        aJ = (aN == aJ.MouseMovement)
+        if not aJ then
+            aN = g.UserInputType
+            av = Enum.UserInputType
+            aJ = (aN == av.Touch)
+        end
+        aQ = aJ
+    end
+    if aQ then
+        aS = (g.Position - slot92)
+        aQ = cc
+        local x1 = aS.X
+        aQ = (aQ(x1) > 5)
+        if not aQ then
+            aN = cc
+            local x9 = aS.Y
+            aQ = (aN(x9) > 5)
+        end
+        if aQ then
+            X = true
+        end
+        local x3 = skyLingPower
+        local x4 = UDim2
+        aN = x4.new
+        x4 = au
+        aJ = x4.X
+        aI = aJ.Scale
+        x4 = au
+        ax = x4.X
+        a7 = ax.Offset
+        aW = (a7 + aS.X)
+        x4 = au
+        a5 = x4.Y
+        aZ = a5.Scale
+        x4 = au
+        ap = x4.Y
+        am = ap.Offset
+        ah = (am + aS.Y)
+        x3.Position = aN(aI, aW, aZ, ah)
+    end
+end
+function handlers.power.onMouseTarget()
+    local ar, aV, a3, az = nil, nil, nil, nil
+    a3 = (if not J then 318 else 1947)
+    az = (if not J then 3472 else 3004)
+    local wQ = (if not J then 1104096 else 5848788)
+    if ((((a3 * 2861) + (az * 2296)) + wQ) % 16777213) == 9985606 then
+        return
+    else
+        local wO = slot63
+        aV = wO.Target
+        ar = aV
+        if ar then
+            local wN = aV.Name
+            ar = (wN == "TPS")
+        end
+        if ar then
+            slot16(aV)
+        end
+    end
+end
+function handlers.power.setPowerShootForce(value)
+    A = value
+end
+function handlers.power.setPowerShootMostOpEnabled(enabled)
+    local a6
+    K = enabled
+    local yW = slot56
+    yW.Enabled = enabled
+    if enabled then
+        local yS = skyLingPower
+        a6 = Color3.fromRGB
+        yS.BackgroundColor3 = a6(70, 160, 220)
+        yS = skyLingPower
+        yS.Text = "SkyLing ON"
+    else
+        local yU = skyLingPower
+        a6 = Color3.fromRGB
+        yU.BackgroundColor3 = a6(135, 206, 250)
+        yU = skyLingPower
+        yU.Text = "SkyLing"
+    end
+end
+function handlers.power.setPowerShootSpeed(value)
+    af = value
+end
+function handlers.power.updateMouseTarget()
+    local hi
+    local s0
+    local aL, ai = nil, nil
+    if not J then
+        return
+    else
+        local BE = slot63
+        ai = BE.Target
+        aL = ai
+        if aL then
+            s0 = ai.Name
+            hi = (s0 == "TPS")
+            aL = hi
+        end
+        if aL then
+            slot16(ai)
+        end
+    end
+end
+function handlers.reach.onCharacterAdded(q)
+    reachBodyParts = {}
+    reachTouchParts = {}
+    aO = nil
+    q.WaitForChild(q, "HumanoidRootPart", 5)
+    refreshReachBodyParts(true)
+end
+function handlers.reach.recreateHitboxLoop()
+    local av, aP, au, a7, aQ = nil, nil, nil, nil, nil
+    while true do
+        task.wait(1)
+        av = not op
+        if not av then
+            local BS = op
+            av = not BS.Parent
+        end
+        if av then
+            local BI = Instance
+            aP = BI.new
+            op = aP("Part")
+            BI = op
+            BI.Name = "op"
+            BI = op
+            local BJ = Enum
+            aP = BJ.PartType
+            au = aP.Ball
+            BI.Shape = au
+            BI = op
+            BJ = Vector3
+            aP = BJ.new
+            BJ = reachSettings
+            au = BJ.reach
+            BJ = reachSettings
+            a7 = BJ.reach
+            BJ = reachSettings
+            aQ = BJ.reach
+            BI.Size = aP(au, a7, aQ)
+            BI = op
+            BJ = reachSettings
+            aP = BJ.hitboxColor
+            BI.Color = aP
+            BI = op
+            BJ = Enum
+            aP = BJ.Material
+            au = aP.Neon
+            BI.Material = au
+            BI = op
+            BI.Transparency = 1
+            BI = op
+            BI.CanCollide = false
+            BI = op
+            BI.CanTouch = true
+            BI = op
+            BI.CanQuery = true
+            BI = op
+            BI.Anchored = true
+            BI = op
+            BI.Massless = true
+            BI = op
+            BJ = Workspace
+            BI.Parent = BJ
+        end
+    end
+end
+function handlers.reach.refreshBodyPartsLoop()
+    while true do
+        task.wait(0.5)
+        refreshReachBodyParts(false)
+    end
+end
+function handlers.reach.setDistance(value)
+    local zZ = reachSettings
+    zZ.reach = value
+    aA = (value * value)
+    zZ = op
+    local z5 = Vector3.new
+    zZ.Size = z5(value, value, value)
+end
+function handlers.reach.setReachEnabled(enabled)
+    local zy = reachSettings
+    zy.isActive = enabled
+    if not enabled then
+        local zB = op
+        zB.Transparency = 1
+        pcall(function()
+            local zC = op
+            local zF = CFrame.new
+            zC.CFrame = zF(0, -500, 0)
+        end)
+    else
+        refreshReachBodyParts(true)
+    end
+end
+function handlers.reach.setReachHideEnabled(enabled)
+    local C_ = reachSettings
+    C_.hideReach = enabled
+end
+function handlers.reach.touchParts(j, o)
+    pcall(firetouchinterest, j, o, 0)
+    pcall(firetouchinterest, j, o, 1)
+end
+function handlers.shield.setShieldEnabled(enabled)
+    local AY = shieldSettings
+    AY.enabled = enabled
+end
+function handlers.shield.setShieldStuds(value)
+    local yO = shieldSettings
+    yO.studs = value
+end
+function handlers.teleport.setTeleportBallMostOpEnabled(enabled)
+    if enabled then
+        createTeleportUI()
+    else
+        slot75()
+    end
+end
+function handlers.utility.identity(e)
+    return e
+end
+function handlers.utility.loadLocalWindUI()
+    local xP = require
+    return xP("./src/Init")
+end
+function handlers.visuals.addBallFire(g)
+    local a6, a2 = nil, nil
+    if not g.FindFirstChild(g, "Fire") then
+        local xK = Instance
+        a6 = xK.new
+        a2 = a6("Fire")
+        xK = slot113
+        a2.Size = xK
+        xK = slot14
+        a2.Heat = xK
+        a2.Parent = g
+    end
+end
+function handlers.visuals.onBallAdded(g)
+    local Z, U = nil, nil
+    local DV = ar
+    Z = (g == slot78)
+    U = DV
+    if U then
+        U = Z
+    end
+    if U then
+        slot97(g)
+    end
+end
+function handlers.visuals.setFireBallEnabled(enabled)
+    J = enabled
+end
+function handlers.visuals.setFireBallHeat(value)
+    local ap, a7, aP = nil, nil, nil
+    slot14 = value
+    ap = Workspace
+    local AP = ap.GetDescendants
+    for t, q in ipairs(AP(ap)) do
+        aP = q
+        local aZ = aP
+        ap = "Name"
+        local AQ = aZ.Name
+        a7 = (AQ == "TPS")
+        if a7 then
+            ap = "Fire"
+            a7 = aZ.FindFirstChild(aZ, "Fire")
+        end
+        if a7 then
+            ap = "Fire"
+            a7 = aZ.Fire
+            a7.Heat = value
+        end
+    end
+end
+function handlers.visuals.setFireBallSize(value)
+    local aJ, aV, ai = nil, nil, nil
+    slot113 = value
+    aJ = Workspace
+    local AU = aJ.GetDescendants
+    for r, o in ipairs(AU(aJ)) do
+        ai = o
+        local av = ai
+        aJ = "Name"
+        local AV = av.Name
+        aV = (AV == "TPS")
+        if aV then
+            aJ = "Fire"
+            aV = av.FindFirstChild(av, "Fire")
+        end
+        if aV then
+            aJ = "Fire"
+            aV = av.Fire
+            aV.Size = value
+        end
+    end
+end
+function handlers.visuals.setPredictBallEnabled(enabled)
+    R = enabled
+    if not enabled then
+        local BZ = ad
+        BZ.Visible = false
+        BZ = P
+        BZ.Visible = false
+    end
+end
+function handlers.visuals.updatePrediction()
+    local aE, an, aJ, aN, aq, aG, a5, aj, aw, aI = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    if not R then
+        local AH = ad
+        AH.Visible = false
+        AH = P
+        AH.Visible = false
+        return
+    else
+        aE = not aF
+        if not aE then
+            local AI = aF
+            aE = not AI.Parent
+        end
+        if not aE then
+            local AL = Workspace
+            an = aF
+            aE = (not an.IsDescendantOf(an, AL))
+        end
+        if aE then
+            aF = findPredictionBall()
+        end
+        aw = (if not aF then 3937 else 3300)
+        aI = (if not aF then 870 else 1804)
+        local Av = (if not aF then 3425190 else 5953200)
+        if ((((aw * 2014) + (aI * 2277)) + Av) % 16777213) == 13335298 then
+            local Aw = ad
+            Aw.Visible = false
+            Aw = P
+            Aw.Visible = false
+            return
+        else
+            local Ax = aF
+            an = Ax.AssemblyLinearVelocity
+            Ax = aF
+            aJ = (Ax.Position + (an * slot34))
+            Ax = camera
+            local Az = aF
+            aN, an = Ax:WorldToViewportPoint(Az.Position)
+            aE = camera
+            a5, aG = aE.WorldToViewportPoint(aE, aJ)
+            aE = an
+            if aE then
+                aE = aG
+            end
+            if aE then
+                local AA = ad
+                local AB = Vector2
+                an = AB.new
+                aq = aN.X
+                aj = aN.Y
+                AA.From = an(aq, aj)
+                AA = ad
+                AB = Vector2
+                an = AB.new
+                aN = a5.X
+                aG = a5.Y
+                AA.To = an(aN, aG)
+                AA = ad
+                AA.Visible = true
+                AA = P
+                AB = Vector2
+                an = AB.new
+                aN = a5.X
+                aG = a5.Y
+                AA.Position = an(aN, aG)
+                AA = P
+                AA.Visible = true
+            else
+                local At = ad
+                At.Visible = false
+                At = P
+                At.Visible = false
+            end
+        end
+    end
+end
+J = nil
+goalkeeperSettings = nil
+slot78 = nil
+reachSettings = nil
+createMobileKeybinds = nil
+S = nil
+slot28 = nil
+camera2 = nil
+slot106 = nil
+slot92 = nil
+followButton = nil
+slot67 = nil
+slot56 = nil
+Debris = nil
+slot34 = nil
+slot22 = nil
+slot9 = nil
+K = nil
+createBallControlUI = nil
+followCharacter = nil
+Workspace = nil
+findNearestBall = nil
+slot80 = nil
+autoActionSettings = nil
+reachTouchParts = nil
+slot16 = nil
+toolCheckSettings = nil
+findPredictionBall = nil
+slot99 = nil
+findNearestFollowBall = nil
+dragStartButtonPosition = nil
+slot58 = nil
+isBallNearLegs = nil
+O = nil
+slot26 = nil
+slot12 = nil
+local N, C, u, UserInputService, B, t, M
+slot101 = nil
+findControllableBall = nil
+N = nil
+slot114 = nil
+C = nil
+u = nil
+UserInputService = nil
+slot51 = nil
+B = nil
+t = nil
+slot93 = nil
+M = nil
+slot4 = nil
+restoreFieldColors = nil
+z = nil
+slot90 = nil
+diveAnimations = nil
+r = nil
+Q = nil
+slot40 = nil
+P = nil
+slot19 = nil
+A = nil
+R = nil
+VirtualInputManager = nil
+g = nil
+slot77 = nil
+slot69 = nil
+reachBodyParts = nil
+slot38 = nil
+slot27 = nil
+slot14 = nil
+teamCheckSettings = nil
+avatarSettings = nil
+slot98 = nil
+slot91 = nil
+dragStartPosition = nil
+slot73 = nil
+applyAvatarFromUser = nil
+o = nil
+X = nil
+Y = nil
+slot21 = nil
+slot8 = nil
+destroyMobileKeybinds = nil
+aa = nil
+findDiveTarget = nil
+slot60 = nil
+slot50 = nil
+camera = nil
+ad = nil
+createTeleportUI = nil
+af = nil
+local isReachTarget, j, f, ab, ae
+slot62 = nil
+isReachTarget = nil
+j = nil
+f = nil
+slot105 = nil
+findReachTargets = nil
+startBallControl = nil
+ab = nil
+ae = nil
+followRootPart = nil
+Lighting = nil
+ai = nil
+applyFieldColor = nil
+slot75 = nil
+followTarget = nil
+RunService = nil
+al = nil
+slot35 = nil
+refreshReachBodyParts = nil
+op = nil
+slot113 = nil
+ballCheckSettings = nil
+slot97 = nil
+ap = nil
+skyboxSettings = nil
+ar = nil
+as = nil
+at = nil
+au = nil
+fieldColorSettings = nil
+curveSettings = nil
+isBallHeld = nil
+destroyBallControlUI = nil
+az = nil
+aA = nil
+playDiveAnimation = nil
+skyLingPower = nil
+slot48 = nil
+localPlayer = nil
+slot13 = nil
+aF = nil
+aG = nil
+shieldSettings = nil
+followHumanoid = nil
+ReplicatedStorage = nil
+aL = nil
+slot63 = nil
+isFollowing = nil
+slot20 = nil
+aO = nil
+slot1 = nil
+local ay, aD, aH, aN
+slot3 = nil
+slot89 = nil
+slot71 = nil
+ay = nil
+aD = nil
+aH = nil
+Players = nil
+aN = nil
+slot109 = nil
+local aP, aQ, aR, aS, aT, aU, aV, updateReach, aX, aY, aZ, a_, a0
+aP = nil
+aR = cloneref
+if not aR then
+    aR = clonereference
+end
+aS = handlers.utility.identity
+aT = aR
+if not aT then
+end
+UserInputService = nil
+Players = nil
+RunService = nil
+VirtualInputManager = nil
+Workspace = nil
+ReplicatedStorage = nil
+Lighting = nil
+Debris = nil
+localPlayer = nil
+camera = nil
+local ab7 = game
+aS = ab7
+UserInputService = aS.GetService(aS, "UserInputService")
+local abq = game
+aS = abq
+Players = aS.GetService(aS, "Players")
+local abK = game
+aS = abK
+RunService = aS.GetService(aS, "RunService")
+local Wg = game
+aS = Wg
+VirtualInputManager = aS.GetService(aS, "VirtualInputManager")
+local Jo = game
+aS = Jo
+Workspace = aS.GetService(aS, "Workspace")
+local WX = game
+aS = WX
+ReplicatedStorage = aS.GetService(aS, "ReplicatedStorage")
+local WH = game
+aS = WH
+Lighting = aS.GetService(aS, "Lighting")
+WH = game
+aS = WH
+aU = aS.GetService(aS, "TweenService")
+WH = game
+aS = WH
+Debris = aS.GetService(aS, "Debris")
+local Hy = Players
+localPlayer = Hy.LocalPlayer
+aR = "CurrentCamera"
+camera = Workspace.CurrentCamera
+aR, aS = pcall(handlers.utility.loadLocalWindUI)
+if aR then
+    aV = aS
+else
+    local WK = loadstring
+    local WL = game
+    aS = WL
+    aV = WK(aS.HttpGet(aS, "https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
+end
+reachSettings = nil
+t = nil
+aP = nil
+op = nil
+reachBodyParts = nil
+reachTouchParts = nil
+aO = nil
+aA = nil
+ab = nil
+slot62 = nil
+shieldSettings = nil
+autoActionSettings = nil
+aL = nil
+ai = nil
+R = nil
+slot34 = nil
+aF = nil
+ad = nil
+P = nil
+u = nil
+ay = nil
+slot4 = nil
+isReachTarget = nil
+findReachTargets = nil
+refreshReachBodyParts = nil
+ae = nil
+destroyMobileKeybinds = nil
+createMobileKeybinds = nil
+local V0 = Enum
+slot57 = V0.KeyCode
+slot33 = slot57.RightShift
+local V8 = UDim2
+slot112 = V8.fromOffset(570, 400)
+VX = "SkyLing"
+local We = slot33
+local Wf = slot112
+aX = aV:CreateWindow({
+    ["Title"] = VX,
+    ["Author"] = "by Skybo",
+    ["Icon"] = "target",
+    ["Theme"] = "Dark",
+    ["ToggleKey"] = We,
+    ["Transparent"] = true,
+    ["Resizable"] = true,
+    ["Size"] = Wf,
+    ["Background"] = "rbxassetid://6423534466",
+})
+slot4 = handlers.ball.hasShootingTool
+local abV = Color3
+slot107 = abV.fromRGB(255, 0, 0)
+slot96 = {
+    "Right Leg",
+    "Left Leg",
+    "RightUpperLeg",
+    "LeftUpperLeg",
+    "RightLowerLeg",
+    "LeftLowerLeg",
+    "Right Foot",
+    "Left Foot",
+}
+reachSettings = {
+    ["reach"] = 10,
+    ["targetBall"] = "TPS",
+    ["isActive"] = false,
+    ["hitboxColor"] = slot107,
+    ["hitboxTransparency"] = 0.6,
+    ["hideReach"] = false,
+    ["touchInterval"] = 0.03,
+    ["legNames"] = slot96,
+    ["armNames"] = {
+        "Right Arm",
+        "Left Arm",
+        "RightUpperArm",
+        "LeftUpperArm",
+        "RightLowerArm",
+        "LeftLowerArm",
+        "Right Hand",
+        "Left Hand",
+    },
+}
+aS = ReplicatedStorage.FindFirstChild(ReplicatedStorage, "ResetWelds")
+aU = ReplicatedStorage.FindFirstChild(ReplicatedStorage, "TweenLimb")
+t = ReplicatedStorage.FindFirstChild(ReplicatedStorage, "ChangeOwner")
+aP = ReplicatedStorage.FindFirstChild(ReplicatedStorage, "ChangeValue")
+local Em = Instance
+aS = Em.new
+op = aS("Part")
+op.Name = "op"
+Em = Enum
+aS = Em.PartType
+aU = aS.Ball
+op.Shape = aU
+Em = Vector3
+aS = Em.new
+aU = reachSettings.reach
+aY = reachSettings.reach
+slot107 = reachSettings.reach
+op.Size = aS(aU, aY, slot107)
+aS = reachSettings.hitboxColor
+op.Color = aS
+Em = Enum
+aS = Em.Material
+aU = aS.Neon
+op.Material = aU
+op.Transparency = 1
+op.CanCollide = false
+op.CanTouch = true
+op.CanQuery = true
+op.Anchored = true
+op.Massless = true
+op.Parent = Workspace
+Em = task
+Em.spawn(handlers.reach.recreateHitboxLoop)
+isReachTarget = function(e)
+    local aZ, aT, aI, a1 = nil, nil, nil, nil
+    if not e then
+        return false
+    else
+        if not e.Parent then
+            return false
+        else
+            local ED = Workspace
+            if not e.IsDescendantOf(e, ED) then
+                return false
+            else
+                aZ = "Name"
+                aT = e.Name
+                local Ex = reachSettings
+                if aT ~= Ex.targetBall then
+                    return false
+                else
+                    aZ, aT = pcall(function()
+                        return e.Position
+                    end)
+                    aI = not aT
+                    a1 = not aZ
+                    if not a1 then
+                        a1 = aI
+                    end
+                    if a1 then
+                        return false
+                    else
+                        if aT.Y < -100 then
+                            return false
+                        else
+                            if aT.Magnitude > 1000000 then
+                                return false
+                            else
+                                return true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+findReachTargets = function()
+    local an, aY, ad, as, ab = nil, nil, nil, nil, nil
+    an = {}
+    aY = Workspace
+    local EG = aY.GetDescendants
+    for e, f in ipairs(EG(aY)) do
+        ab = f
+        local a7 = ab
+        aY = "BasePart"
+        ad = "IsA"
+        as = a7.IsA(a7, "BasePart")
+        if as then
+            aY = "Name"
+            ad = a7.Name
+            local EM = reachSettings
+            as = (ad == EM.targetBall)
+        end
+        if as then
+            local EP = Workspace
+            aY = "IsDescendantOf"
+            as = a7.IsDescendantOf(a7, EP)
+        end
+        if as then
+            aY, ad = pcall(function()
+                return a7.Position
+            end)
+            as = aY
+            if as then
+                as = ad
+            end
+            if as then
+                aY = "Y"
+                as = (ad.Y > -100)
+            end
+            if as then
+                aY = "Magnitude"
+                as = (ad.Magnitude < 1000000)
+            end
+            if as then
+                table.insert(an, a7)
+                pcall(function()
+                    local EH = a7
+                    EH.CanTouch = true
+                    EH = a7
+                    EH.CanQuery = true
+                end)
+            end
+        end
+    end
+    return an
+end
+reachBodyParts = {}
+reachTouchParts = {}
+aO = nil
+refreshReachBodyParts = function(f)
+    local aU, ar, aR, aN, aw, ap, av, a0 = nil, nil, nil, nil, nil, nil, nil, nil
+    local KY = localPlayer
+    aU = KY.Character
+    if not aU then
+        reachBodyParts = {}
+        reachTouchParts = {}
+        aO = nil
+        return
+    else
+        aR = not f
+        if aR then
+            aR = (aO == aU)
+        end
+        if not not aR then
+            aR = (#reachTouchParts > 0)
+        end
+        if aR then
+            aR = true
+            local Lb = reachTouchParts
+            ap = false
+            for e, g in ipairs(Lb) do
+                av = g
+                local ah = av
+                aN = not ah
+                if not aN then
+                    aN = not ah.Parent
+                end
+                if aN then
+                    aR = false
+                    ap = true
+                end
+                if ap then
+                    break
+                end
+            end
+            if aR then
+                return
+            else
+                aO = aU
+                aR, ar = {}, {}
+                aN = function(g)
+                    local aV, am, aS, aW = nil, nil, nil, nil
+                    for f, e in ipairs(g) do
+                        local aB = nil
+                        am = e
+                        local a0 = am
+                        aV = aU
+                        aB = aV.FindFirstChild(aV, a0)
+                        aV = aB
+                        if aV then
+                            aV = aB.IsA(aB, "BasePart")
+                        end
+                        if aV then
+                            pcall(function()
+                                local K0 = aB
+                                K0.CanTouch = true
+                                K0 = aB
+                                K0.CanQuery = true
+                            end)
+                            aV = false
+                            local K2 = ar
+                            aS = false
+                            for j, o in ipairs(K2) do
+                                aW = o
+                                local ax = aW
+                                if ax == aB then
+                                    aV = true
+                                    aS = true
+                                end
+                                if aS then
+                                    break
+                                end
+                            end
+                            if not aV then
+                                table.insert(ar, aB)
+                            end
+                        end
+                    end
+                end
+                local K4 = reachSettings
+                aN(K4.legNames)
+                K4 = reachSettings
+                aN(K4.armNames)
+                aN({ "UpperTorso", "LowerTorso", "Torso", "HumanoidRootPart" })
+                K4 = reachSettings
+                local K6 = K4.legNames
+                for j, o in ipairs(K6) do
+                    a0 = o
+                    local ao = a0
+                    aw = aU.FindFirstChild(aU, ao)
+                    aN = aw
+                    if aN then
+                        aN = aw.IsA(aw, "BasePart")
+                    end
+                    if aN then
+                        table.insert(aR, aw)
+                    end
+                end
+                reachBodyParts = aR
+                reachTouchParts = ar
+            end
+        else
+            aO = aU
+            aR, ar = {}, {}
+            aN = function(g)
+                local aV, am, aS, aW = nil, nil, nil, nil
+                for f, e in ipairs(g) do
+                    local aB = nil
+                    am = e
+                    local a0 = am
+                    aV = aU
+                    aB = aV.FindFirstChild(aV, a0)
+                    aV = aB
+                    if aV then
+                        aV = aB.IsA(aB, "BasePart")
+                    end
+                    if aV then
+                        pcall(function()
+                            local K0 = aB
+                            K0.CanTouch = true
+                            K0 = aB
+                            K0.CanQuery = true
+                        end)
+                        aV = false
+                        local K2 = ar
+                        aS = false
+                        for j, o in ipairs(K2) do
+                            aW = o
+                            local ax = aW
+                            if ax == aB then
+                                aV = true
+                                aS = true
+                            end
+                            if aS then
+                                break
+                            end
+                        end
+                        if not aV then
+                            table.insert(ar, aB)
+                        end
+                    end
+                end
+            end
+            local K4 = reachSettings
+            aN(K4.legNames)
+            K4 = reachSettings
+            aN(K4.armNames)
+            aN({ "UpperTorso", "LowerTorso", "Torso", "HumanoidRootPart" })
+            K4 = reachSettings
+            local K6 = K4.legNames
+            for j, o in ipairs(K6) do
+                a0 = o
+                local ao = a0
+                aw = aU.FindFirstChild(aU, ao)
+                aN = aw
+                if aN then
+                    aN = aw.IsA(aw, "BasePart")
+                end
+                if aN then
+                    table.insert(aR, aw)
+                end
+            end
+            reachBodyParts = aR
+            reachTouchParts = ar
+        end
+    end
+end
+ae = handlers.reach.touchParts
+aS = reachSettings.reach
+aA = (aS * reachSettings.reach)
+ab = 0
+slot62 = 0
+updateReach = function()
+    local aO, ah, aT, aj, ax, al, aY, aD, a5, aZ, aC, ak, ap, az =
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    local IH = reachSettings
+    if not IH.isActive then
+        local HV = op
+        if not (HV.Transparency == 1) then
+            local Im = op
+            Im.Transparency = 1
+        end
+        pcall(function()
+            local Iy = op
+            local IB = CFrame.new
+            Iy.CFrame = IB(0, -500, 0)
+        end)
+        return
+    else
+        ah = tick()
+        if (ah - ab) < 0.05 then
+            return
+        else
+            ab = ah
+            local IG = localPlayer
+            aj = IG.Character
+            if not aj then
+                pcall(function()
+                    local In = op
+                    local Iu = CFrame.new
+                    In.CFrame = Iu(0, -500, 0)
+                end)
+                return
+            else
+                refreshReachBodyParts(false)
+                if #reachTouchParts == 0 then
+                    pcall(function()
+                        local H7 = op
+                        local Id = CFrame.new
+                        H7.CFrame = Id(0, -500, 0)
+                    end)
+                    return
+                else
+                    aT = findReachTargets()
+                    if #aT == 0 then
+                        pcall(function()
+                            local HK = op
+                            local HP = CFrame.new
+                            HK.CFrame = HP(0, -500, 0)
+                        end)
+                        return
+                    else
+                        local Ih = reachSettings
+                        ax = Ih.reach
+                        Ih = reachSettings
+                        aA = (ax * Ih.reach)
+                        Ih = reachSettings
+                        ax = Ih.hideReach
+                        if ax then
+                            ax = 1
+                        end
+                        aj = ax
+                        if not aj then
+                            local IF = reachSettings
+                            aj = IF.hitboxTransparency
+                        end
+                        op.Transparency = aj
+                        local H2 = op
+                        local H3 = Vector3
+                        ax = H3.new
+                        H3 = reachSettings
+                        aY = H3.reach
+                        H3 = reachSettings
+                        a5 = H3.reach
+                        H3 = reachSettings
+                        aZ = H3.reach
+                        H2.Size = ax(aY, a5, aZ)
+                        aO = aT[1]
+                        aj = aO
+                        if aj then
+                            aj = isReachTarget(aO)
+                        end
+                        if aj then
+                            pcall(function()
+                                local Ii = op
+                                local Ij = aO
+                                local Il = Ij.CFrame
+                                Ii.CFrame = Il
+                            end)
+                        else
+                            pcall(function()
+                                local HC = op
+                                local HF = CFrame.new
+                                HC.CFrame = HF(0, -500, 0)
+                            end)
+                        end
+                        aj = (ah - slot62)
+                        local HJ = reachSettings
+                        if aj < HJ.touchInterval then
+                            return
+                        else
+                            slot62 = ah
+                            for o, g in ipairs(aT) do
+                                aC = g
+                                local a_ = aC
+                                if isReachTarget(a_) then
+                                    aT = a_.Position
+                                    ah = false
+                                    local H0 = reachBodyParts
+                                    ak = false
+                                    for j, f in ipairs(H0) do
+                                        ap = f
+                                        local aF = ap
+                                        aj = aF
+                                        if aj then
+                                            aj = aF.Parent
+                                        end
+                                        if aj then
+                                            ax = (aF.Position - aT)
+                                            al = ax.X
+                                            aD = (al * ax.X)
+                                            a5 = ax.Y
+                                            aZ = (aD + (a5 * ax.Y))
+                                            a5 = ax.Z
+                                            if (aZ + (a5 * ax.Z)) <= aA then
+                                                ah = true
+                                                ak = true
+                                            end
+                                        end
+                                        if ak then
+                                            break
+                                        end
+                                    end
+                                    if ah then
+                                        local HX = reachTouchParts
+                                        for e, q in ipairs(HX) do
+                                            az = q
+                                            local ai = az
+                                            ah = ai
+                                            if ah then
+                                                aT = "Parent"
+                                                ah = ai.Parent
+                                            end
+                                            if ah then
+                                                ae(op, ai)
+                                                ae(a_, ai)
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+aS = RunService.Heartbeat
+aS.Connect(aS, updateReach)
+localPlayer.CharacterAdded:Connect(handlers.reach.onCharacterAdded)
+local IJ = task
+IJ.spawn(handlers.reach.refreshBodyPartsLoop)
+shieldSettings = { ["enabled"] = false, ["studs"] = 5 }
+IJ = task
+IJ.spawn(function()
+    local am, as, an, aA, a7, aB, a6 = nil, nil, nil, nil, nil, nil, nil
+    while true do
+        local IZ = task
+        IZ.wait(0.1)
+        IZ = shieldSettings
+        if not IZ.enabled then
+            continue
+        end
+        if not t then
+            local I0 = ReplicatedStorage
+            as = I0
+            t = as.FindFirstChild(as, "ChangeOwner")
+            if not aP then
+                local I_ = ReplicatedStorage
+                as = I_
+                aP = as.FindFirstChild(as, "ChangeValue")
+                local IY = localPlayer
+                as = IY.Character
+                if as then
+                    aA = as.FindFirstChild(as, "HumanoidRootPart")
+                    if aA then
+                        am = Workspace
+                        local IM = am.GetDescendants
+                        for q, o in ipairs(IM(am)) do
+                            a6 = o
+                            local aG = a6
+                            am = "Name"
+                            local IR = aG.Name
+                            as = (IR == "TPS")
+                            if as then
+                                am = "BasePart"
+                                a7 = aG.IsA(aG, "BasePart")
+                                if not a7 then
+                                    am = "Model"
+                                    a7 = aG.IsA(aG, "Model")
+                                end
+                                as = a7
+                            end
+                            if as then
+                                an = aG.IsA(aG, "BasePart")
+                                if an then
+                                    an = aG
+                                end
+                                am = an
+                                if not am then
+                                    an = aG.PrimaryPart
+                                    if not an then
+                                        an = aG.FindFirstChildWhichIsA(aG, "BasePart")
+                                    end
+                                    am = an
+                                end
+                                as = am
+                                if as then
+                                    am = "Position"
+                                    an = as.Position
+                                    aB = (an - aA.Position)
+                                    an = aB.Magnitude
+                                    local IN = shieldSettings
+                                    if an <= IN.studs then
+                                        if t then
+                                            pcall(function()
+                                                local IO = t
+                                                IO.FireServer(IO, aG)
+                                            end)
+                                        end
+                                        if aP then
+                                            pcall(function()
+                                                local IV = aP
+                                                IV.FireServer(IV, aG)
+                                            end)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            else
+                local IY = localPlayer
+                as = IY.Character
+                if as then
+                    aA = as.FindFirstChild(as, "HumanoidRootPart")
+                    if aA then
+                        am = Workspace
+                        local IM = am.GetDescendants
+                        for q, o in ipairs(IM(am)) do
+                            a6 = o
+                            local aG = a6
+                            am = "Name"
+                            local IR = aG.Name
+                            as = (IR == "TPS")
+                            if as then
+                                am = "BasePart"
+                                a7 = aG.IsA(aG, "BasePart")
+                                if not a7 then
+                                    am = "Model"
+                                    a7 = aG.IsA(aG, "Model")
+                                end
+                                as = a7
+                            end
+                            if as then
+                                an = aG.IsA(aG, "BasePart")
+                                if an then
+                                    an = aG
+                                end
+                                am = an
+                                if not am then
+                                    an = aG.PrimaryPart
+                                    if not an then
+                                        an = aG.FindFirstChildWhichIsA(aG, "BasePart")
+                                    end
+                                    am = an
+                                end
+                                as = am
+                                if as then
+                                    am = "Position"
+                                    an = as.Position
+                                    aB = (an - aA.Position)
+                                    an = aB.Magnitude
+                                    local IN = shieldSettings
+                                    if an <= IN.studs then
+                                        if t then
+                                            pcall(function()
+                                                local IO = t
+                                                IO.FireServer(IO, aG)
+                                            end)
+                                        end
+                                        if aP then
+                                            pcall(function()
+                                                local IV = aP
+                                                IV.FireServer(IV, aG)
+                                            end)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        else
+            if not aP then
+                local I_ = ReplicatedStorage
+                as = I_
+                aP = as.FindFirstChild(as, "ChangeValue")
+                local IY = localPlayer
+                as = IY.Character
+                if as then
+                    aA = as.FindFirstChild(as, "HumanoidRootPart")
+                    if aA then
+                        am = Workspace
+                        local IM = am.GetDescendants
+                        for q, o in ipairs(IM(am)) do
+                            a6 = o
+                            local aG = a6
+                            am = "Name"
+                            local IR = aG.Name
+                            as = (IR == "TPS")
+                            if as then
+                                am = "BasePart"
+                                a7 = aG.IsA(aG, "BasePart")
+                                if not a7 then
+                                    am = "Model"
+                                    a7 = aG.IsA(aG, "Model")
+                                end
+                                as = a7
+                            end
+                            if as then
+                                an = aG.IsA(aG, "BasePart")
+                                if an then
+                                    an = aG
+                                end
+                                am = an
+                                if not am then
+                                    an = aG.PrimaryPart
+                                    if not an then
+                                        an = aG.FindFirstChildWhichIsA(aG, "BasePart")
+                                    end
+                                    am = an
+                                end
+                                as = am
+                                if as then
+                                    am = "Position"
+                                    an = as.Position
+                                    aB = (an - aA.Position)
+                                    an = aB.Magnitude
+                                    local IN = shieldSettings
+                                    if an <= IN.studs then
+                                        if t then
+                                            pcall(function()
+                                                local IO = t
+                                                IO.FireServer(IO, aG)
+                                            end)
+                                        end
+                                        if aP then
+                                            pcall(function()
+                                                local IV = aP
+                                                IV.FireServer(IV, aG)
+                                            end)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            else
+                local IY = localPlayer
+                as = IY.Character
+                if as then
+                    aA = as.FindFirstChild(as, "HumanoidRootPart")
+                    if aA then
+                        am = Workspace
+                        local IM = am.GetDescendants
+                        for q, o in ipairs(IM(am)) do
+                            a6 = o
+                            local aG = a6
+                            am = "Name"
+                            local IR = aG.Name
+                            as = (IR == "TPS")
+                            if as then
+                                am = "BasePart"
+                                a7 = aG.IsA(aG, "BasePart")
+                                if not a7 then
+                                    am = "Model"
+                                    a7 = aG.IsA(aG, "Model")
+                                end
+                                as = a7
+                            end
+                            if as then
+                                an = aG.IsA(aG, "BasePart")
+                                if an then
+                                    an = aG
+                                end
+                                am = an
+                                if not am then
+                                    an = aG.PrimaryPart
+                                    if not an then
+                                        an = aG.FindFirstChildWhichIsA(aG, "BasePart")
+                                    end
+                                    am = an
+                                end
+                                as = am
+                                if as then
+                                    am = "Position"
+                                    an = as.Position
+                                    aB = (an - aA.Position)
+                                    an = aB.Magnitude
+                                    local IN = shieldSettings
+                                    if an <= IN.studs then
+                                        if t then
+                                            pcall(function()
+                                                local IO = t
+                                                IO.FireServer(IO, aG)
+                                            end)
+                                        end
+                                        if aP then
+                                            pcall(function()
+                                                local IV = aP
+                                                IV.FireServer(IV, aG)
+                                            end)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+IJ = Enum
+aZ = IJ.KeyCode
+a_ = aZ.R
+autoActionSettings = {
+    ["ActivationDistance"] = 20,
+    ["ClickInterval"] = 0.1,
+    ["TargetName"] = "TPS",
+    ["ToggleKey"] = a_,
+    ["ActionKey"] = "F",
+    ["isActive"] = false,
+    ["armed"] = false,
+}
+aL, ai = nil, nil
+R = false
+slot34 = 0.35
+aF = nil
+local acd = Drawing
+aS = acd.new
+ad = aS("Line")
+ad.Visible = false
+ad.Thickness = 2
+ad.Transparency = 1
+acd = Color3
+aS = acd.fromRGB
+ad.Color = aS(255, 60, 60)
+acd = Drawing
+aS = acd.new
+P = aS("Circle")
+P.Visible = false
+P.Filled = true
+P.Radius = 6
+P.Transparency = 1
+acd = Color3
+aS = acd.fromRGB
+P.Color = aS(255, 60, 60)
+u, ay = nil, {}
+destroyMobileKeybinds = function()
+    local aE, aO = nil, nil
+    local Js = ay
+    for o, f in ipairs(Js) do
+        aO = f
+        local aL = aO
+        pcall(function()
+            aL.Disconnect(aL)
+        end)
+    end
+    table.clear(ay)
+    if u then
+        aE = u
+        aE.Destroy(aE)
+        u = nil
+    end
+end
+createMobileKeybinds = function()
+    local dp = table.insert
+    local aa, a1, W, a3, a5, aP, X, ao, aG, aL, aF, a6, a7, a2, aR, al, at, ad, au, ae, ai =
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil,
+        nil
+    if u then
+        destroyMobileKeybinds()
+    end
+    local Z8 = Instance
+    a6 = Z8.new
+    a2 = a6("ScreenGui")
+    a2.Name = "MobileKeybindGui"
+    a2.ResetOnSpawn = false
+    a2.IgnoreGuiInset = true
+    a2.DisplayOrder = 999
+    Z8 = localPlayer
+    a6 = Z8
+    aR = a6.WaitForChild
+    a2.Parent = aR(a6, "PlayerGui")
+    u = a2
+    Z8 = Enum
+    al = Z8.KeyCode
+    ad = { ["name"] = "R", ["key"] = al.R }
+    Z8 = Enum
+    au = Z8.KeyCode
+    au = { ad, { ["name"] = "T", ["key"] = au.T } }
+    aF = function(o)
+        local im = table.insert
+        local g, j, f, q = nil, nil, nil, nil
+        local aaf = ay
+        im(
+            aaf,
+            o.InputBegan:Connect(function(j)
+                local aY, Y, ai, az = nil, nil, nil, nil
+                Y = j.UserInputType
+                ai = Enum.UserInputType
+                ai = (Y == ai.MouseButton1)
+                if not ai then
+                    Y = j.UserInputType
+                    az = Enum.UserInputType
+                    ai = (Y == az.Touch)
+                end
+                if not not ai then
+                    g = true
+                    f = j.Position
+                    q = o.Position
+                    aY = nil
+                    aY = j.Changed:Connect(function()
+                        local av, aJ, aP = nil, nil, nil
+                        local aar = j
+                        aJ = aar.UserInputState
+                        aar = Enum
+                        aP = aar.UserInputState
+                        if aJ == aP.End then
+                            g = false
+                            av = aY
+                            av.Disconnect(av)
+                        end
+                    end)
+                end
+            end)
+        )
+        aaf = ay
+        im(
+            aaf,
+            o.InputChanged:Connect(function(g)
+                local aL, aB, aN = nil, nil, nil
+                aL = g.UserInputType
+                aB = Enum.UserInputType
+                aB = (aL == aB.MouseMovement)
+                if not aB then
+                    aL = g.UserInputType
+                    aN = Enum.UserInputType
+                    aB = (aL == aN.Touch)
+                end
+                if aB then
+                    j = g
+                end
+            end)
+        )
+        aaf = ay
+        local aax = UserInputService
+        im(
+            aaf,
+            aax.InputChanged:Connect(function(e)
+                local aA, ap, ay, aT, aG, ao, aD, aE, aR, aZ, a7, av, au =
+                    nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+                aA = (e == j)
+                if aA then
+                    aA = g
+                end
+                if aA then
+                    ap = (e.Position - f)
+                    local aaF = UDim2
+                    ay = aaF.new
+                    aaF = q
+                    aT = aaF.X
+                    aG = aT.Scale
+                    aaF = q
+                    ao = aaF.X
+                    aD = ao.Offset
+                    aE = (aD + ap.X)
+                    aaF = q
+                    aR = aaF.Y
+                    aZ = aR.Scale
+                    aaF = q
+                    a7 = aaF.Y
+                    av = a7.Offset
+                    au = (av + ap.Y)
+                    o.Position = ay(aG, aE, aZ, au)
+                end
+            end)
+        )
+    end
+    Z8 = ipairs
+    for o, j in Z8(au) do
+        local aN, aM, aS, aj = nil, nil, nil, nil
+        ae = o
+        ai = j
+        local aK = ae
+        local ag = ai
+        local aaM = Instance
+        a7 = aaM.new
+        aN = a7("TextButton")
+        aaM = UDim2
+        a7 = aaM.new
+        aN.Size = a7(0, 60, 0, 60)
+        aaM = UDim2
+        a7 = aaM.new
+        al = (-220 - ((aK - 1) * 75))
+        aN.Position = a7(1, -90, 1, al)
+        aaM = Color3
+        a7 = aaM.fromRGB
+        aN.BackgroundColor3 = a7(30, 30, 30)
+        aN.BackgroundTransparency = 0.3
+        a7 = ag.name
+        aN.Text = a7
+        aaM = Color3
+        a7 = aaM.new
+        aN.TextColor3 = a7(1, 1, 1)
+        aN.TextScaled = true
+        aaM = Enum
+        a7 = aaM.Font
+        al = a7.GothamBold
+        aN.Font = al
+        aN.AutoButtonColor = false
+        aN.Parent = a2
+        aaM = Instance
+        a7 = aaM.new
+        al = a7("UICorner", aN)
+        aaM = UDim
+        at = aaM.new
+        al.CornerRadius = at(1, 0)
+        aF(aN)
+        aaM = Vector2
+        aM, aS, aj = false, false, aaM.zero
+        a6 = dp
+        aaM = ay
+        a6(
+            aaM,
+            aN.InputBegan:Connect(function(q)
+                local af, a3, aq = nil, nil, nil
+                af = q.UserInputType
+                a3 = Enum.UserInputType
+                a3 = (af == a3.MouseButton1)
+                if not a3 then
+                    af = q.UserInputType
+                    aq = Enum.UserInputType
+                    a3 = (af == aq.Touch)
+                end
+                if not not a3 then
+                    aS = false
+                    aj = q.Position
+                end
+            end)
+        )
+        a6 = dp
+        aaM = ay
+        a6(
+            aaM,
+            aN.InputChanged:Connect(function(g)
+                local as, aI, ac, ae, aJ = nil, nil, nil, nil, nil
+                aI = g.UserInputType
+                ae = Enum.UserInputType
+                ae = (aI == ae.MouseMovement)
+                if not ae then
+                    aI = g.UserInputType
+                    aJ = Enum.UserInputType
+                    ae = (aI == aJ.Touch)
+                end
+                as = ae
+                if as then
+                    ac = (g.Position - aj)
+                    as = (ac.Magnitude > 8)
+                end
+                if as then
+                    aS = true
+                end
+            end)
+        )
+        a6 = dp
+        aaM = ay
+        a6(
+            aaM,
+            aN.MouseButton1Click:Connect(function()
+                local aO, aI, ao = nil, nil, nil
+                aI = (if aS then 2769 else 2588)
+                ao = (if aS then 1252 else 394)
+                local abf = (if aS then 3466788 else 1019672)
+                if ((((aI * 4055) + (ao * 70)) + abf) % 16777213) == 14782723 then
+                    return
+                else
+                    if aM then
+                        aM = false
+                        local abc = aN
+                        local abd = Color3
+                        aO = abd.fromRGB
+                        abc.BackgroundColor3 = aO(30, 30, 30)
+                        abc = VirtualInputManager
+                        abd = ag
+                        abc:SendKeyEvent(false, abd.key, false, game)
+                    else
+                        aM = true
+                        local aba = aN
+                        local abb = Color3
+                        aO = abb.fromRGB
+                        aba.BackgroundColor3 = aO(0, 170, 255)
+                        aba = VirtualInputManager
+                        abb = ag
+                        aba:SendKeyEvent(true, abb.key, false, game)
+                    end
+                end
+            end)
+        )
+    end
+    Z8 = Instance
+    aF = Z8.new
+    aL = aF("ImageButton")
+    Z8 = UDim2
+    a6 = Z8.new
+    aL.Size = a6(0, 70, 0, 70)
+    Z8 = UDim2
+    a6 = Z8.new
+    aL.Position = a6(1, -100, 1, -95)
+    aL.BackgroundTransparency = 1
+    aL.Image = "rbxassetid://120976481677763"
+    aL.Parent = a2
+    ao, X = false, nil
+    aF = function(j)
+        X = j.WaitForChild(j, "Humanoid")
+    end
+    Z8 = localPlayer
+    if Z8.Character then
+        local Z6 = localPlayer
+        aF(Z6.Character)
+    end
+    a6 = dp
+    local YO = ay
+    local YP = localPlayer
+    aR = YP.CharacterAdded
+    a6(YO, aR.Connect(aR, aF))
+    aF = dp
+    YO = ay
+    YP = RunService
+    aF(
+        YO,
+        YP.RenderStepped:Connect(function()
+            local aQ
+            aQ = ao
+            if aQ then
+                aQ = X
+            end
+            if aQ then
+                local YS = X
+                YS.Jump = true
+            end
+        end)
+    )
+    aF = dp
+    YO = ay
+    aF(
+        YO,
+        aL.MouseButton1Down:Connect(function()
+            ao = true
+            local YT = aL
+            local YW = Color3.fromRGB
+            YT.ImageColor3 = YW(150, 150, 150)
+        end)
+    )
+    aF = dp
+    YO = ay
+    aF(
+        YO,
+        aL.MouseButton1Up:Connect(function()
+            ao = false
+            local Y_ = aL
+            local Y2 = Color3.new
+            Y_.ImageColor3 = Y2(1, 1, 1)
+        end)
+    )
+    aG = 45
+    YO = Instance
+    a7 = YO.new
+    aP = a7("Frame")
+    YO = UDim2
+    a7 = YO.new
+    aP.Size = a7(0, 220, 0, 220)
+    YO = UDim2
+    a7 = YO.new
+    aP.Position = a7(0, 20, 1, -240)
+    aP.BackgroundTransparency = 1
+    aP.Active = true
+    aP.Parent = a2
+    YO = Instance
+    a6 = YO.new
+    a5 = a6("Frame")
+    YO = UDim2
+    a6 = YO.new
+    a5.Size = a6(0, 34, 0, 34)
+    YO = Vector2
+    a6 = YO.new
+    a5.AnchorPoint = a6(0.5, 0.5)
+    YO = UDim2
+    a6 = YO.new
+    a5.Position = a6(0.5, 0, 0.5, 0)
+    YO = Color3
+    a6 = YO.new
+    a5.BackgroundColor3 = a6(0, 0, 0)
+    a5.BackgroundTransparency = 0.35
+    a5.Parent = aP
+    YO = Instance
+    a6 = YO.new
+    a2 = a6("UICorner", a5)
+    YO = UDim
+    aR = YO.new
+    a2.CornerRadius = aR(1, 0)
+    YO = Vector3
+    a3, W, a1, aa = false, nil, YO.zero, nil
+    aF = function(f)
+        aa = f.WaitForChild(f, "Humanoid")
+    end
+    YO = localPlayer
+    if YO.Character then
+        local Z7 = localPlayer
+        aF(Z7.Character)
+    end
+    a6 = dp
+    local Zo = ay
+    local Zp = localPlayer
+    a2 = Zp.CharacterAdded
+    a6(Zo, a2.Connect(a2, aF))
+    aF = dp
+    Zo = ay
+    aF(
+        Zo,
+        aP.InputBegan:Connect(function(q, f)
+            local X, ax, an = nil, nil, nil
+            if f then
+                return
+            else
+                X = q.UserInputType
+                ax = Enum.UserInputType
+                ax = (X == ax.Touch)
+                if not ax then
+                    X = q.UserInputType
+                    an = Enum.UserInputType
+                    ax = (X == an.MouseButton1)
+                end
+                if not not ax then
+                    a3 = true
+                    W = q
+                end
+            end
+        end)
+    )
+    aF = dp
+    Zo = ay
+    Zp = UserInputService
+    aF(
+        Zo,
+        Zp.InputChanged:Connect(function(g)
+            local as, ac, aK, aR, aJ, al, am, aL = nil, nil, nil, nil, nil, nil, nil, nil
+            local ZB = a3
+            as = (g == W)
+            ac = ZB
+            if ac then
+                ac = as
+            end
+            if ac then
+                local ZC = aP
+                ac = ZC.AbsolutePosition
+                ZC = aP
+                aR = (ac + (ZC.AbsoluteSize / 2))
+                ZC = Vector2
+                ac = ZC.new
+                aJ = g.Position
+                am = aJ.X
+                aL = g.Position
+                ZC = aL.Y
+                ac = (ac(am, ZC) - aR)
+                aK = ac.Magnitude
+                as = (aK > aG)
+                if as then
+                    as = (ac.Unit * aG)
+                end
+                aR = as
+                if not aR then
+                    aR = ac
+                end
+                as = aR
+                local ZH = a5
+                aR = UDim2.new
+                al = as.X
+                aL = as.Y
+                ZH.Position = aR(0.5, al, 0.5, aL)
+                ac = (aK > 0)
+                if ac then
+                    ac = (as / aG)
+                end
+                as = ac
+                if not as then
+                    as = Vector2.zero
+                end
+                ac = as
+                local ZL = Vector3
+                aK = ZL.new
+                aJ = ac.X
+                ZL = ac.Y
+                a1 = aK(aJ, 0, ZL)
+            end
+        end)
+    )
+    aF = dp
+    Zo = ay
+    Zp = UserInputService
+    aF(
+        Zo,
+        Zp.InputEnded:Connect(function(g)
+            local ak, at = nil, nil
+            local ZQ = a3
+            ak = (g == W)
+            at = ZQ
+            if at then
+                at = ak
+            end
+            if at then
+                a3 = false
+                W = nil
+                local ZO = a5
+                at = UDim2.new
+                ZO.Position = at(0.5, 0, 0.5, 0)
+                ZO = Vector3
+                a1 = ZO.zero
+            end
+        end)
+    )
+    aF = dp
+    Zo = ay
+    Zp = RunService
+    aF(
+        Zo,
+        Zp.RenderStepped:Connect(function()
+            local aq, ap, ae, ai, aV, aB, af, ar, a2, aW, a0 =
+                nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+            if not aa then
+                return
+            else
+                local Z5 = a1
+                if Z5.Magnitude > 0.05 then
+                    local ZY = Workspace
+                    ap = ZY.CurrentCamera
+                    ae = ap.CFrame
+                    ZY = Vector3
+                    ap = ZY.new
+                    ai = ae.LookVector
+                    aV = ai.X
+                    aB = ae.LookVector
+                    ZY = aB.Z
+                    af = ap(aV, 0, ZY)
+                    if af.Magnitude > 0 then
+                        af = af.Unit
+                    end
+                    local ZV = Vector3
+                    ap = ZV.new
+                    ai = ae.RightVector
+                    aV = ai.X
+                    aB = ae.RightVector
+                    ZV = aB.Z
+                    ar = ap(aV, 0, ZV)
+                    if ar.Magnitude > 0 then
+                        ar = ar.Unit
+                    end
+                    local ZS = a1
+                    ap = (ar * ZS.X)
+                    ZS = a1
+                    ae = (ap + (af * -ZS.Z))
+                    a0 = (if ae.Magnitude > 0 then 1 else 0)
+                    ZS = (1 - a0)
+                    a2 = ((908 * a0) + (3151 * ZS))
+                    local ZX = (1 - a0)
+                    aW = ((2152 * a0) + (2054 * ZX))
+                    local Z4 = (a2 * aW)
+                    if ((((a2 * 4016) + (aW * 3581)) + Z4) % 16777213) == 13306856 then
+                        aq = aa
+                        aq.Move(aq, ae, false)
+                    end
+                end
+            end
+        end)
+    )
+end
+slot29 = handlers.character.waitForRootPart
+if localPlayer.Character then
+    local Sn = slot29
+    Sn(localPlayer.Character)
+end
+r = nil
+C = nil
+at = nil
+o = nil
+O = nil
+S = nil
+slot71 = nil
+slot105 = nil
+slot93 = nil
+slot101 = nil
+slot3 = nil
+f = nil
+B = nil
+slot20 = nil
+slot35 = nil
+J = nil
+slot113 = nil
+slot14 = nil
+slot63 = nil
+camera2 = nil
+as = nil
+slot73 = nil
+isFollowing = nil
+followTarget = nil
+slot50 = nil
+slot12 = nil
+j = nil
+destroyBallControlUI = nil
+findControllableBall = nil
+startBallControl = nil
+createBallControlUI = nil
+findPredictionBall = nil
+slot16 = nil
+slot58 = nil
+slot77 = nil
+local WT = slot29
+aT = localPlayer.CharacterAdded
+aT.Connect(aT, WT)
+slot50 = handlers.goalkeeper.hasTackleTool
+slot12 = handlers.input.setAutoActionActive
+UserInputService.InputBegan:Connect(handlers.input.onAutoActionKey)
+r, C = nil, {}
+at, o, O, S = false, nil, nil, nil
+slot71, slot105, slot93 = 70, 16, 6
+slot101, slot3 = 0.004, 0.006
+f, B = 0, 0.2
+aT = camera.CameraType
+local abR = camera.CameraSubject
+local abS = aT
+slot20, slot35 = abS, abR
+j = handlers.mobile.stopBallControl
+destroyBallControlUI = function()
+    local Y, X = nil, nil
+    j()
+    local St = C
+    for g, f in ipairs(St) do
+        X = f
+        local aP = X
+        pcall(function()
+            aP.Disconnect(aP)
+        end)
+    end
+    table.clear(C)
+    if r then
+        Y = r
+        Y.Destroy(Y)
+        r = nil
+    end
+end
+findControllableBall = function()
+    local tg
+    local q4
+    local a3, aK, aZ, aU, aA, ah, V, a1, aq, ar, aY = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    local SY = localPlayer
+    aK = SY.Character
+    if not aK then
+        return nil
+    else
+        aU = aK.FindFirstChild(aK, "HumanoidRootPart")
+        if not aU then
+            return nil
+        else
+            aK, a3 = nil, 80
+            aZ = Workspace
+            local Sz = aZ.GetDescendants
+            for o, q in ipairs(Sz(aZ)) do
+                local at = nil
+                a1 = q
+                local an = a1
+                aZ = "Name"
+                q4 = an.Name
+                tg = (q4 == "TPS")
+                if tg then
+                    at = nil
+                    if an.IsA(an, "Model") then
+                        aA = an.PrimaryPart
+                        if not aA then
+                            aA = an.FindFirstChildWhichIsA(an, "BasePart")
+                        end
+                        at = aA
+                    else
+                        aA = "IsA"
+                        if an.IsA(an, "BasePart") then
+                            at = an
+                        end
+                    end
+                    aZ = at
+                    if aZ then
+                        local SD = Workspace
+                        aA = "IsDescendantOf"
+                        aZ = at.IsDescendantOf(at, SD)
+                    end
+                    if aZ then
+                        aZ, aA = pcall(function()
+                            local SO = at
+                            return SO.Position
+                        end)
+                        ah = aZ
+                        if not not ah then
+                            ah = aA
+                        end
+                        if ah then
+                            aZ = "Y"
+                            ah = (aA.Y > -100)
+                        end
+                        if ah then
+                            aZ = "Position"
+                            ah = (aA - aU.Position)
+                            V = ah.Magnitude
+                            aY = (if V < a3 then 1 else 0)
+                            local SM = (1 - aY)
+                            aq = ((155 * aY) + (1586 * SM))
+                            SM = (1 - aY)
+                            ar = ((267 * aY) + (1239 * SM))
+                            local SN = (aq * ar)
+                            if ((((aq * 2596) + (ar * 1518)) + SN) % 16777213) == 849071 then
+                                a3 = V
+                                aK = an
+                            end
+                        end
+                    end
+                end
+            end
+            return aK
+        end
+    end
+end
+startBallControl = function(g)
+    local ap, al, ad, aT = nil, nil, nil, nil
+    if g.IsA(g, "Model") then
+        ad = g.PrimaryPart
+        if not ad then
+            ad = g.FindFirstChildWhichIsA(g, "BasePart")
+        end
+        ap = ad
+    else
+        ap = g
+    end
+    if not ap then
+        return
+    else
+        o = ap
+        at = true
+        if r then
+            local TK = r
+            al = TK
+            aT = al.FindFirstChild(al, "SkyLing")
+            if aT then
+                al = Color3.fromRGB
+                aT.BackgroundColor3 = al(80, 180, 220)
+                aT.Text = "Active"
+            end
+        end
+        local S7 = camera
+        al = S7.CFrame
+        aT = al.LookVector
+        ap = math.atan2
+        ad = -aT.X
+        S7 = -aT.Z
+        f = ap(ad, S7)
+        ap = math.asin
+        al = math.clamp
+        S7 = aT.Y
+        local S8
+        B = ap(al(S7, -1, 1))
+        S8 = camera
+        S7 = Enum
+        al = S7.CameraType
+        aT = al.Scriptable
+        S8.CameraType = aT
+        S8 = UserInputService
+        S = S8.InputChanged:Connect(function(g, j)
+            local sc = math.clamp
+            local aa, aO, a_, ae = nil, nil, nil, nil
+            aa = not at
+            aO = j
+            if not aO then
+                aO = aa
+            end
+            if aO then
+                return
+            else
+                aO = g.UserInputType
+                ae = Enum.UserInputType
+                if aO == ae.MouseMovement then
+                    local Tb = f
+                    aO = g.Delta
+                    f = (Tb - (aO.X * slot101))
+                    aa = sc
+                    Tb = B
+                    a_ = g.Delta
+                    local Td = (Tb - (a_.Y * slot101))
+                    B = aa(Td, -1.2, 1.2)
+                else
+                    aO = g.UserInputType
+                    ae = Enum.UserInputType
+                    if aO == ae.Touch then
+                        local Tf = f
+                        aO = g.Delta
+                        f = (Tf - (aO.X * slot3))
+                        aa = sc
+                        Tf = B
+                        a_ = g.Delta
+                        local Tm = (Tf - (a_.Y * slot3))
+                        B = aa(Tm, -1.2, 1.2)
+                    end
+                end
+            end
+        end)
+        S8 = RunService
+        O = S8.RenderStepped:Connect(function()
+            local a5, as, aJ, W, aM, aX = nil, nil, nil, nil, nil, nil
+            as = not at
+            if not as then
+                as = not o
+            end
+            if not as then
+                local Tw = o
+                as = not Tw.Parent
+            end
+            if not not as then
+                j()
+                return
+            else
+                local Tx = CFrame
+                aJ = Tx.fromEulerAnglesYXZ(B, f, 0)
+                a5 = aJ.LookVector
+                pcall(function()
+                    local Tz = o
+                    local TA = a5
+                    local TB = slot71
+                    Tz.AssemblyLinearVelocity = (TA * TB)
+                    Tz = o
+                    TB = Vector3
+                    TA = TB.zero
+                    Tz.AssemblyAngularVelocity = TA
+                end)
+                Tx = o
+                aJ = (Tx.Position - (a5 * slot105))
+                Tx = Vector3
+                local TF = slot93
+                local TH
+                W = (aJ + Tx.new(0, TF, 0))
+                TH = camera
+                TF = CFrame
+                aJ = TF.lookAt
+                TF = o
+                aM = TF.Position
+                TF = Vector3
+                aX = (aM + TF.new(0, 1.5, 0))
+                TH.CFrame = aJ(W, aX)
+            end
+        end)
+    end
+end
+createBallControlUI = function()
+    local s_ = table.insert
+    local ak, aI, aV, aS, W, a3, aU, ay, ao = nil, nil, nil, nil, nil, nil, nil, nil, nil
+    if r then
+        destroyBallControlUI()
+    end
+    local aco = localPlayer
+    aU = aco.PlayerGui
+    ay = aU
+    aU = ay.FindFirstChild(ay, "SkyLing")
+    if aU then
+        aU.Destroy(aU)
+    end
+    local acp = Instance
+    aU = acp.new
+    ay = aU("ScreenGui")
+    ay.Name = "SkyLing"
+    ay.ResetOnSpawn = false
+    acp = localPlayer
+    aU = acp
+    ao = aU.WaitForChild
+    ay.Parent = ao(aU, "PlayerGui")
+    r = ay
+    acp = Instance
+    aU = acp.new
+    aV = aU("TextButton")
+    aV.Name = "SkyLing"
+    acp = UDim2
+    aU = acp.new
+    aV.Size = aU(0, 150, 0, 55)
+    acp = UDim2
+    aU = acp.new
+    aV.Position = aU(0.5, -75, 0.5, -27)
+    acp = Color3
+    aU = acp.fromRGB
+    aV.BackgroundColor3 = aU(137, 207, 240)
+    acp = Color3
+    aU = acp.new
+    aV.TextColor3 = aU(1, 1, 1)
+    aV.Text = "SkyLing"
+    acp = Enum
+    aU = acp.Font
+    ao = aU.GothamBold
+    aV.Font = ao
+    aV.TextSize = 18
+    aV.AutoButtonColor = false
+    aV.Parent = ay
+    acp = Instance
+    aU = acp.new
+    ay = aU("UICorner", aV)
+    acp = UDim
+    ao = acp.new
+    ay.CornerRadius = ao(0, 12)
+    ak, W, aS, aI = false, nil, nil, 0
+    a3 = s_
+    acp = C
+    a3(
+        acp,
+        aV.InputBegan:Connect(function(e)
+            local a0, a6, aW = nil, nil, nil
+            a0 = e.UserInputType
+            a6 = Enum.UserInputType
+            a6 = (a0 == a6.MouseButton1)
+            if not a6 then
+                a0 = e.UserInputType
+                aW = Enum.UserInputType
+                a6 = (a0 == aW.Touch)
+            end
+            if a6 then
+                ak = true
+                W = e.Position
+                local acO = aV
+                aS = acO.Position
+                aI = 0
+            end
+        end)
+    )
+    a3 = s_
+    acp = C
+    a3(
+        acp,
+        aV.InputChanged:Connect(function(q)
+            local ao, ap, a_, V, aw, a0, aZ, aR, aF, a6, aW, aK, ae, aC =
+                nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+            ao = ak
+            if ao then
+                a_ = q.UserInputType
+                V = Enum.UserInputType
+                V = (a_ == V.MouseMovement)
+                if not V then
+                    a_ = q.UserInputType
+                    aw = Enum.UserInputType
+                    V = (a_ == aw.Touch)
+                end
+                ao = V
+            end
+            if not not ao then
+                ap = (q.Position - W)
+                local acY = aI
+                aI = (acY + ap.Magnitude)
+                acY = aV
+                local acZ = UDim2
+                a_ = acZ.new
+                acZ = aS
+                V = acZ.X
+                a0 = V.Scale
+                acZ = aS
+                aZ = acZ.X
+                aR = aZ.Offset
+                aF = (aR + ap.X)
+                acZ = aS
+                a6 = acZ.Y
+                aW = a6.Scale
+                acZ = aS
+                aK = acZ.Y
+                ae = aK.Offset
+                aC = (ae + ap.Y)
+                acY.Position = a_(a0, aF, aW, aC)
+                W = q.Position
+                acY = aV
+                aS = acY.Position
+            end
+        end)
+    )
+    a3 = s_
+    acp = C
+    a3(
+        acp,
+        aV.InputEnded:Connect(function(g)
+            local ax, ag, aQ, aX = nil, nil, nil, nil
+            ag = g.UserInputType
+            aQ = Enum.UserInputType
+            aQ = (ag == aQ.MouseButton1)
+            if not aQ then
+                ag = g.UserInputType
+                aX = Enum.UserInputType
+                aQ = (ag == aX.Touch)
+            end
+            if aQ then
+                ak = false
+                if aI < 15 then
+                    if at then
+                        j()
+                    else
+                        ax = findControllableBall()
+                        if ax then
+                            startBallControl(ax)
+                        end
+                    end
+                end
+            end
+        end)
+    )
+end
+findPredictionBall = function()
+    local aB, at, av, a4 = nil, nil, nil, nil
+    aB = Workspace
+    local adi = aB.GetDescendants
+    for o, f in ipairs(adi(aB)) do
+        a4 = f
+        local Y = a4
+        aB = "Name"
+        local adm = Y.Name
+        at = (adm == "TPS")
+        if at then
+            aB = "BasePart"
+            at = Y.IsA(Y, "BasePart")
+        end
+        if at then
+            local adj = Workspace
+            aB = "IsDescendantOf"
+            at = Y.IsDescendantOf(Y, adj)
+        end
+        if at then
+            aB, at = pcall(function()
+                return Y.Position
+            end)
+            av = aB
+            if av then
+                av = at
+            end
+            if av then
+                aB = "Y"
+                av = (at.Y > -100)
+            end
+            if av then
+                return Y
+            end
+        end
+    end
+    return nil
+end
+RunService.RenderStepped:Connect(handlers.visuals.updatePrediction)
+J = false
+slot113 = 5
+slot14 = 8
+slot16 = handlers.visuals.addBallFire
+slot63 = localPlayer.GetMouse(localPlayer)
+local W9 = slot63
+W9.Button1Down:Connect(handlers.power.onMouseTarget)
+UserInputService.TouchTap:Connect(handlers.power.updateMouseTarget)
+aR = getgenv()
+aU = { [".gg/scripters"] = 0.65 }
+aR.Resolution = aU
+W9 = workspace
+camera2 = W9.CurrentCamera
+as = nil
+slot73 = 0.65
+slot58 = handlers.camera.enableStretch
+slot77 = handlers.camera.disconnectStretch
+isFollowing = false
+followTarget = nil
+aS = localPlayer.Character
+if not aS then
+    aT = localPlayer.CharacterAdded
+    aS = aT.Wait(aT)
+end
+followCharacter = aS
+local tPSFollowUI = followCharacter
+followHumanoid = tPSFollowUI.WaitForChild(tPSFollowUI, "Humanoid")
+tPSFollowUI = followCharacter
+followRootPart = tPSFollowUI.WaitForChild(tPSFollowUI, "HumanoidRootPart")
+slot60 = 0
+aD = 150
+tPSFollowUI = Instance
+aR = tPSFollowUI.new
+slot40 = aR("ScreenGui")
+tPSFollowUI = slot40
+tPSFollowUI.Name = "TPSFollowUI"
+tPSFollowUI = slot40
+tPSFollowUI.ResetOnSpawn = false
+tPSFollowUI = slot40
+tPSFollowUI.IgnoreGuiInset = true
+tPSFollowUI = slot40
+tPSFollowUI.Enabled = false
+tPSFollowUI = slot40
+local Lr = localPlayer
+aS = Lr.WaitForChild
+tPSFollowUI.Parent = aS(Lr, "PlayerGui")
+tPSFollowUI = Instance
+aR = tPSFollowUI.new
+followButton = aR("TextButton")
+followButton.Name = "FollowButton"
+tPSFollowUI = UDim2
+aR = tPSFollowUI.new
+followButton.Size = aR(0, 110, 0, 45)
+tPSFollowUI = UDim2
+aR = tPSFollowUI.new
+followButton.Position = aR(0.82, 0, 0.68, 0)
+tPSFollowUI = Color3
+aR = tPSFollowUI.fromRGB
+followButton.BackgroundColor3 = aR(135, 206, 250)
+followButton.BorderSizePixel = 0
+followButton.Text = "Follow"
+tPSFollowUI = Color3
+aR = tPSFollowUI.fromRGB
+followButton.TextColor3 = aR(255, 255, 255)
+followButton.TextScaled = true
+tPSFollowUI = Enum
+aR = tPSFollowUI.Font
+aT = aR.GothamBold
+followButton.Font = aT
+followButton.AutoButtonColor = false
+tPSFollowUI = slot40
+followButton.Parent = tPSFollowUI
+tPSFollowUI = Instance
+aR = tPSFollowUI.new
+aT = aR("UICorner")
+tPSFollowUI = UDim
+aR = tPSFollowUI.new
+aT.CornerRadius = aR(0, 10)
+aT.Parent = followButton
+tPSFollowUI = Instance
+aR = tPSFollowUI.new
+slot8 = aR("UIStroke")
+tPSFollowUI = slot8
+tPSFollowUI.Thickness = 2
+tPSFollowUI = slot8
+Lr = Color3
+aR = Lr.fromRGB
+tPSFollowUI.Color = aR(180, 230, 255)
+tPSFollowUI = slot8
+tPSFollowUI.Parent = followButton
+slot26 = handlers.ball.isValidBall
+findNearestFollowBall = function()
+    local W, an, as, aG, am, Y, ah = nil, nil, nil, nil, nil, nil, nil
+    W = nil
+    an = math.huge
+    as = Workspace
+    local LD = as.GetDescendants
+    for e, o in ipairs(LD(as)) do
+        ah = o
+        local ak = ah
+        as = "BasePart"
+        aG = "IsA"
+        am = ak.IsA(ak, "BasePart")
+        if am then
+            as = "Name"
+            local LH = ak.Name
+            am = (LH == "TPS")
+        end
+        if am then
+            local LI = Workspace
+            as = "IsDescendantOf"
+            am = ak.IsDescendantOf(ak, LI)
+        end
+        if am then
+            as, aG = pcall(function()
+                return ak.Position
+            end)
+            am = as
+            if am then
+                am = aG
+            end
+            if am then
+                as = "Y"
+                am = (aG.Y > -100)
+            end
+            if am then
+                local LE = followRootPart
+                am = (aG - LE.Position)
+                Y = am.Magnitude
+                as = (Y <= aD)
+                if as then
+                    as = (Y < an)
+                end
+                if as then
+                    an = Y
+                    W = ak
+                end
+            end
+        end
+    end
+    return W
+end
+slot19 = handlers.follow.updateButtonState
+slot90 = handlers.follow.startFollowingNearestBall
+ap = handlers.follow.clearTarget
+followButton.MouseButton1Click:Connect(handlers.follow.toggleFollowing)
+RunService.RenderStepped:Connect(handlers.follow.updateMovement)
+dragStartPosition = nil
+slot78 = nil
+ar = false
+dragStartButtonPosition = nil
+slot97 = handlers.follow.updateButtonPosition
+followButton.InputBegan:Connect(function(q)
+    local ao, aU, aR = nil, nil, nil
+    ao = q.UserInputType
+    aU = Enum.UserInputType
+    aU = (ao == aU.MouseButton1)
+    if not aU then
+        ao = q.UserInputType
+        aR = Enum.UserInputType
+        aU = (ao == aR.Touch)
+    end
+    if aU then
+        ar = true
+        dragStartPosition = q.Position
+        local LM = followButton
+        dragStartButtonPosition = LM.Position
+        q.Changed:Connect(function()
+            local a0, aJ = nil, nil
+            local LO = q
+            a0 = LO.UserInputState
+            LO = Enum
+            aJ = LO.UserInputState
+            if a0 == aJ.End then
+                ar = false
+            end
+        end)
+    end
+end)
+followButton.InputChanged:Connect(handlers.follow.onDragChanged)
+UserInputService.InputChanged:Connect(handlers.visuals.onBallAdded)
+localPlayer.CharacterAdded:Connect(handlers.follow.onCharacterAdded)
+aN = "TPS"
+g = nil
+slot69 = 100
+al = false
+slot51 = 20
+findNearestBall = function(j)
+    local ar, aC, a_, aI, ap, a2, W = nil, nil, nil, nil, nil, nil, nil
+    ar = slot51
+    aC = nil
+    a_ = workspace
+    local L2 = a_.GetDescendants
+    for q, f in ipairs(L2(a_)) do
+        W = f
+        local aD = W
+        a_ = "BasePart"
+        aI = "IsA"
+        ap = aD.IsA(aD, "BasePart")
+        if ap then
+            a_ = "Name"
+            ap = (aD.Name == aN)
+        end
+        if ap then
+            local L3 = Workspace
+            a_ = "IsDescendantOf"
+            ap = aD.IsDescendantOf(aD, L3)
+        end
+        if ap then
+            a_, aI = pcall(function()
+                return aD.Position
+            end)
+            ap = a_
+            if ap then
+                ap = aI
+            end
+            if ap then
+                a_ = "Y"
+                ap = (aI.Y > -100)
+            end
+            if ap then
+                a_ = "Position"
+                ap = (aI - j.Position)
+                a2 = ap.Magnitude
+                if a2 <= ar then
+                    ar = a2
+                    aC = aD
+                end
+            end
+        end
+    end
+    return aC
+end
+RunService.Heartbeat:Connect(handlers.magnet.updateBallForce)
+localPlayer.CharacterAdded:Connect(handlers.magnet.clearTarget)
+aG = nil
+createTeleportUI = function()
+    local aS, an, aD, aY, am, at, aM, ad, aV = nil, nil, nil, nil, nil, nil, nil, nil, nil
+    if aG then
+        at = aG
+        at.Destroy(at)
+    end
+    local Md = localPlayer
+    aM = Md
+    ad = aM.WaitForChild(aM, "PlayerGui")
+    Md = Instance
+    aM = Md.new
+    aV = aM("ScreenGui")
+    aV.Name = "SkyLingTeleportBall"
+    aV.ResetOnSpawn = false
+    aV.Parent = ad
+    aG = aV
+    Md = Instance
+    aM = Md.new
+    aY = aM("Frame")
+    Md = UDim2
+    aM = Md.new
+    aY.Size = aM(0, 190, 0, 75)
+    Md = UDim2
+    aM = Md.new
+    aY.Position = aM(0.5, -95, 0.5, -38)
+    Md = Color3
+    aM = Md.fromRGB
+    aY.BackgroundColor3 = aM(135, 206, 250)
+    aY.BorderSizePixel = 0
+    aY.Parent = aV
+    Md = Instance
+    aM = Md.new
+    ad = aM("UICorner")
+    Md = UDim
+    aM = Md.new
+    ad.CornerRadius = aM(0, 14)
+    ad.Parent = aY
+    Md = Instance
+    aM = Md.new
+    ad = aM("UIStroke")
+    Md = Color3
+    aM = Md.fromRGB
+    ad.Color = aM(210, 245, 255)
+    ad.Thickness = 1.5
+    ad.Parent = aY
+    Md = Instance
+    aM = Md.new
+    ad = aM("TextLabel")
+    Md = UDim2
+    aM = Md.new
+    ad.Size = aM(1, 0, 0, 25)
+    ad.BackgroundTransparency = 1
+    ad.Text = "SkyLing"
+    Md = Color3
+    aM = Md.fromRGB
+    ad.TextColor3 = aM(255, 255, 255)
+    ad.TextSize = 15
+    Md = Enum
+    aM = Md.Font
+    aV = aM.GothamBold
+    ad.Font = aV
+    ad.Parent = aY
+    Md = Instance
+    aM = Md.new
+    ad = aM("TextButton")
+    Md = UDim2
+    aM = Md.new
+    ad.Size = aM(1, -20, 0, 36)
+    Md = UDim2
+    aM = Md.new
+    ad.Position = aM(0, 10, 0, 30)
+    Md = Color3
+    aM = Md.fromRGB
+    ad.BackgroundColor3 = aM(105, 190, 230)
+    ad.BorderSizePixel = 0
+    ad.Text = "Teleport"
+    Md = Color3
+    aM = Md.fromRGB
+    ad.TextColor3 = aM(255, 255, 255)
+    ad.TextSize = 14
+    Md = Enum
+    aM = Md.Font
+    aV = aM.GothamBold
+    ad.Font = aV
+    ad.Parent = aY
+    Md = Instance
+    aM = Md.new
+    aV = aM("UICorner")
+    Md = UDim
+    aM = Md.new
+    aV.CornerRadius = aM(0, 10)
+    aV.Parent = ad
+    am = false
+    aD = nil
+    aS = nil
+    aY.InputBegan:Connect(function(j)
+        local X, ab, ar = nil, nil, nil
+        X = j.UserInputType
+        ab = Enum.UserInputType
+        ab = (X == ab.MouseButton1)
+        if not ab then
+            X = j.UserInputType
+            ar = Enum.UserInputType
+            ab = (X == ar.Touch)
+        end
+        if not not ab then
+            am = true
+            aD = j.Position
+            local MB = aY
+            aS = MB.Position
+        end
+    end)
+    Md = UserInputService
+    Md.InputChanged:Connect(function(f)
+        local Y, aZ, av, aw, as, af, ad, ae, a1, aT, V, aX, ao =
+            nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+        if not am then
+            return
+        else
+            Y = f.UserInputType
+            av = Enum.UserInputType
+            av = (Y == av.MouseMovement)
+            if not av then
+                Y = f.UserInputType
+                aw = Enum.UserInputType
+                av = (Y == aw.Touch)
+            end
+            if not not av then
+                Y = (f.Position - aD)
+                local MF = aY
+                local MG = UDim2
+                aZ = MG.new
+                MG = aS
+                aw = MG.X
+                as = aw.Scale
+                MG = aS
+                af = MG.X
+                ad = af.Offset
+                ae = (ad + Y.X)
+                MG = aS
+                a1 = MG.Y
+                aT = a1.Scale
+                MG = aS
+                V = MG.Y
+                aX = V.Offset
+                ao = (aX + Y.Y)
+                MF.Position = aZ(as, ae, aT, ao)
+            end
+        end
+    end)
+    Md = UserInputService
+    Md.InputEnded:Connect(function(q)
+        local aU, aL, aG = nil, nil, nil
+        aU = q.UserInputType
+        aL = Enum.UserInputType
+        aL = (aU == aL.MouseButton1)
+        if not aL then
+            aU = q.UserInputType
+            aG = Enum.UserInputType
+            aL = (aU == aG.Touch)
+        end
+        if aL then
+            am = false
+        end
+    end)
+    an = function()
+        local a4, aC, aE, ai = nil, nil, nil, nil
+        a4 = workspace
+        local MZ = a4.GetDescendants
+        for o, e in ipairs(MZ(a4)) do
+            ai = e
+            local aq = ai
+            a4 = "Name"
+            local M_ = aq.Name
+            aC = (M_ == "TPS")
+            if aC then
+                a4 = "BasePart"
+                aC = aq.IsA(aq, "BasePart")
+            end
+            if aC then
+                local M2 = Workspace
+                a4 = "IsDescendantOf"
+                aC = aq.IsDescendantOf(aq, M2)
+            end
+            if aC then
+                a4, aC = pcall(function()
+                    return aq.Position
+                end)
+                aE = a4
+                if aE then
+                    aE = aC
+                end
+                if aE then
+                    a4 = "Y"
+                    aE = (aC.Y > -100)
+                end
+                if aE then
+                    return aq
+                end
+            end
+        end
+    end
+    ad.Activated:Connect(function()
+        local ap, at, aB, ag = nil, nil, nil, nil
+        local M7 = localPlayer
+        at = M7.Character
+        if not at then
+            return
+        else
+            ag = at.FindFirstChild(at, "HumanoidRootPart")
+            ap = an()
+            at = ag
+            if at then
+                at = ap
+            end
+            if not not at then
+                aB = ag.CFrame
+                ap.CFrame = aB
+            end
+        end
+    end)
+end
+slot75 = handlers.curve.destroyTargetMarker
+af = 10
+aH = 10
+A = 10
+K = false
+tPSFollowUI = Instance
+aR = tPSFollowUI.new
+slot56 = aR("ScreenGui")
+tPSFollowUI = slot56
+tPSFollowUI.Name = "SkyLingPowerGui"
+tPSFollowUI = slot56
+tPSFollowUI.ResetOnSpawn = false
+tPSFollowUI = slot56
+tPSFollowUI.Enabled = false
+tPSFollowUI = slot56
+Lr = localPlayer
+aS = Lr.WaitForChild
+tPSFollowUI.Parent = aS(Lr, "PlayerGui")
+tPSFollowUI = Instance
+aR = tPSFollowUI.new
+skyLingPower = aR("TextButton")
+skyLingPower.Name = "SkyLingPower"
+tPSFollowUI = UDim2
+aR = tPSFollowUI.new
+skyLingPower.Size = aR(0, 110, 0, 40)
+tPSFollowUI = UDim2
+aR = tPSFollowUI.new
+skyLingPower.Position = aR(0.85, 0, 0.15, 0)
+tPSFollowUI = Color3
+aR = tPSFollowUI.fromRGB
+skyLingPower.BackgroundColor3 = aR(135, 206, 250)
+tPSFollowUI = Color3
+aR = tPSFollowUI.fromRGB
+skyLingPower.TextColor3 = aR(255, 255, 255)
+skyLingPower.Text = "SkyLing"
+tPSFollowUI = Enum
+aR = tPSFollowUI.Font
+aT = aR.GothamBold
+skyLingPower.Font = aT
+skyLingPower.TextSize = 16
+skyLingPower.AutoButtonColor = true
+tPSFollowUI = slot56
+skyLingPower.Parent = tPSFollowUI
+tPSFollowUI = Instance
+aR = tPSFollowUI.new
+aT = aR("UICorner")
+tPSFollowUI = UDim
+aR = tPSFollowUI.new
+aT.CornerRadius = aR(0, 8)
+aT.Parent = skyLingPower
+Q = false
+au = nil
+X = false
+slot92 = nil
+skyLingPower.InputBegan:Connect(handlers.follow.onDragStarted)
+skyLingPower.InputEnded:Connect(handlers.power.onButtonInput)
+UserInputService.InputChanged:Connect(handlers.power.onDragInput)
+N = handlers.ball.hasNoGroundBelow
+tPSFollowUI = task
+tPSFollowUI.spawn(function()
+    local W, aO, aX, ak, a4, aq, ab = nil, nil, nil, nil, nil, nil, nil
+    while true do
+        task.wait(0.1)
+        W = K
+        if not W then
+            if W then
+                W = Workspace
+                local Nm = W.GetDescendants
+                for e, f in ipairs(Nm(W)) do
+                    ab = f
+                    local aW = ab
+                    W = "BasePart"
+                    aO = "IsA"
+                    aX = aW.IsA(aW, "BasePart")
+                    if aX then
+                        W = "Name"
+                        local Ns = aW.Name
+                        aX = (Ns == "TPS")
+                    end
+                    if aX then
+                        W = "Parent"
+                        aX = aW.Parent
+                    end
+                    if aX then
+                        local Nn = Workspace
+                        W = "IsDescendantOf"
+                        aX = aW.IsDescendantOf(aW, Nn)
+                    end
+                    if aX then
+                        W, aO = pcall(function()
+                            return aW.Position
+                        end)
+                        aX = W
+                        if aX then
+                            aX = aO
+                        end
+                        if aX then
+                            W = "Y"
+                            aX = (aO.Y > -100)
+                        end
+                        if aX then
+                            if N(aW) then
+                                aO = aW.AssemblyLinearVelocity
+                                local Nt = Vector3
+                                aX = Nt.new
+                                a4 = aO.X
+                                Nt = aO.Z
+                                aq = aX(a4, 0, Nt)
+                                if aq.Magnitude > 0.5 then
+                                    aX = aq.Unit
+                                    W = (aO + (aX * (af * (A / 10))))
+                                    aW.AssemblyLinearVelocity = W
+                                else
+                                    aX = aW.CFrame
+                                    aX = (aO + (aX.LookVector * (af * (A / 10))))
+                                    aW.AssemblyLinearVelocity = aX
+                                end
+                                W = "CFrame"
+                                aO = aW.CFrame
+                                local Np = (aH * 0.05)
+                                ak = (aO + Vector3.new(0, Np, 0))
+                                aW.CFrame = ak
+                            end
+                        end
+                    end
+                end
+            end
+            continue
+        end
+        W = slot4()
+        if W then
+            W = Workspace
+            local Nm = W.GetDescendants
+            for e, f in ipairs(Nm(W)) do
+                ab = f
+                local aW = ab
+                W = "BasePart"
+                aO = "IsA"
+                aX = aW.IsA(aW, "BasePart")
+                if aX then
+                    W = "Name"
+                    local Ns = aW.Name
+                    aX = (Ns == "TPS")
+                end
+                if aX then
+                    W = "Parent"
+                    aX = aW.Parent
+                end
+                if aX then
+                    local Nn = Workspace
+                    W = "IsDescendantOf"
+                    aX = aW.IsDescendantOf(aW, Nn)
+                end
+                if aX then
+                    W, aO = pcall(function()
+                        return aW.Position
+                    end)
+                    aX = W
+                    if aX then
+                        aX = aO
+                    end
+                    if aX then
+                        W = "Y"
+                        aX = (aO.Y > -100)
+                    end
+                    if aX then
+                        if N(aW) then
+                            aO = aW.AssemblyLinearVelocity
+                            local Nt = Vector3
+                            aX = Nt.new
+                            a4 = aO.X
+                            Nt = aO.Z
+                            aq = aX(a4, 0, Nt)
+                            if aq.Magnitude > 0.5 then
+                                aX = aq.Unit
+                                W = (aO + (aX * (af * (A / 10))))
+                                aW.AssemblyLinearVelocity = W
+                            else
+                                aX = aW.CFrame
+                                aX = (aO + (aX.LookVector * (af * (A / 10))))
+                                aW.AssemblyLinearVelocity = aX
+                            end
+                            W = "CFrame"
+                            aO = aW.CFrame
+                            local Np = (aH * 0.05)
+                            ak = (aO + Vector3.new(0, Np, 0))
+                            aW.CFrame = ak
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+curveSettings = { [1] = false, [2] = 50, [3] = 50, [4] = nil, [5] = false, [6] = nil, [7] = 0.94, [8] = 5 }
+slot21 = handlers.curve.destroyCurveMarker
+slot28 = handlers.curve.createTargetMarker
+slot27 = handlers.curve.screenPositionToWorld
+UserInputService.InputBegan:Connect(handlers.curve.onMouseInput)
+UserInputService.TouchTap:Connect(handlers.curve.onTouchInput)
+M = handlers.ball.isAirborne
+RunService.Heartbeat:Connect(function()
+    local hJ
+    local j3
+    local aB, a5, X, aY, aM, ak, aa, a2, aD, an, ac, aH, aO, ag, aV, V =
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    if not curveSettings[1] then
+        return
+    else
+        aB = not curveSettings[5]
+        if not aB then
+            aB = not curveSettings[4]
+        end
+        if aB then
+            return
+        else
+            aB = Workspace
+            local NH = aB.GetDescendants
+            for q, f in ipairs(NH(aB)) do
+                aO = f
+                local a0 = aO
+                aB = "BasePart"
+                a5 = "IsA"
+                X = a0.IsA(a0, "BasePart")
+                if X then
+                    aB = "Name"
+                    j3 = a0.Name
+                    hJ = (j3 == "TPS")
+                    X = hJ
+                end
+                if X then
+                    local NR = Workspace
+                    aB = "IsDescendantOf"
+                    X = a0.IsDescendantOf(a0, NR)
+                end
+                if X then
+                    aB, a5 = pcall(function()
+                        return a0.Position
+                    end)
+                    X = aB
+                    if X then
+                        X = a5
+                    end
+                    if X then
+                        aB = "Y"
+                        X = (a5.Y > -100)
+                    end
+                    if X then
+                        V = (if M(a0) then 1 else 0)
+                        local NS = (1 - V)
+                        ag = ((1693 * V) + (3 * NS))
+                        NS = (1 - V)
+                        aV = ((3823 * V) + (1161 * NS))
+                        local NT = (ag * aV)
+                        if ((((ag * 2388) + (aV * 1334)) + NT) % 16777213) == 15615105 then
+                            a5 = a0.AssemblyLinearVelocity
+                            local NQ = Vector3
+                            X = NQ.new
+                            aM = a5.X
+                            NQ = a5.Z
+                            aa = X(aM, 0, NQ)
+                            aB = "Magnitude"
+                            if aa.Magnitude >= curveSettings[8] then
+                                local NU = Vector3
+                                X = NU.new
+                                aY = curveSettings[4]
+                                ak = aY.X
+                                a2 = a0.Position
+                                an = (ak - a2.X)
+                                ak = curveSettings[4]
+                                ac = ak.Z
+                                aH = a0.Position
+                                NU = (ac - aH.Z)
+                                aH = X(an, 0, NU)
+                                aB = "Magnitude"
+                                if aH.Magnitude >= 1 then
+                                    X = aa.Unit
+                                    aY = aH.Unit
+                                    aM = X.Dot(X, aY)
+                                    if aM > 0.2 then
+                                        aB = ((curveSettings[3] / 100) * 0.15)
+                                        ak = X.Lerp(X, aY, aB)
+                                        aD = ak.Unit
+                                        local NP = ((curveSettings[2] / 100) * 0.05)
+                                        X = (aa.Magnitude * (1 + NP))
+                                        if X > 300 then
+                                            X = 300
+                                        end
+                                        aY = Vector3.new
+                                        ak = (aD.X * X)
+                                        a2 = a5.Y
+                                        ac = (aD.Z * X)
+                                        a0.AssemblyLinearVelocity = aY(ak, a2, ac)
+                                    end
+                                    aB = "AssemblyAngularVelocity"
+                                    a5 = (a0.AssemblyAngularVelocity * curveSettings[7])
+                                    a0.AssemblyAngularVelocity = a5
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+slot91 = {
+    ["Monika"] = "rbxassetid://1890511151",
+    ["Sakura"] = "rbxassetid://2602753108",
+    ["Hatsune miku"] = "rbxassetid://2810233801",
+    ["Cartoon"] = "rbxassetid://15114954171",
+}
+skyboxSettings = { [1] = "Monika", [2] = false, [3] = nil, [4] = nil }
+aQ = handlers.appearance.captureSkybox
+slot1 = handlers.appearance.applySkybox
+slot22 = handlers.appearance.restoreSkybox
+aQ()
+slot67 = false
+aa = 1
+z = 0
+az = 10
+slot114 = handlers.goalkeeper.hasGoalkeeperTool
+tPSFollowUI = task
+tPSFollowUI.spawn(function()
+    local aI, at, ao, am, ag, aj = nil, nil, nil, nil, nil, nil
+    while true do
+        task.wait()
+        aI = slot67
+        if not aI then
+            if aI then
+                if (tick() - z) >= aa then
+                    local Of = localPlayer
+                    at = Of.Character
+                    if at then
+                        am = at.FindFirstChild(at, "HumanoidRootPart")
+                        if am then
+                            aI = Workspace
+                            local Oh = aI.GetDescendants
+                            for j, e in ipairs(Oh(aI)) do
+                                local aN = nil
+                                aj = e
+                                local aq = aj
+                                aI = "Name"
+                                local Ov = aq.Name
+                                at = (Ov == "TPS")
+                                if at then
+                                    aI = "BasePart"
+                                    ag = aq.IsA(aq, "BasePart")
+                                    if not ag then
+                                        aI = "Model"
+                                        ag = aq.IsA(aq, "Model")
+                                    end
+                                    at = ag
+                                end
+                                if at then
+                                    local Os = Workspace
+                                    aI = "IsDescendantOf"
+                                    at = aq.IsDescendantOf(aq, Os)
+                                end
+                                if at then
+                                    at = "IsA"
+                                    ao = aq.IsA(aq, "BasePart")
+                                    if ao then
+                                        ao = aq
+                                    end
+                                    aI = ao
+                                    if not aI then
+                                        at = "PrimaryPart"
+                                        ao = aq.PrimaryPart
+                                        if not ao then
+                                            at = "BasePart"
+                                            ao = aq.FindFirstChildWhichIsA(aq, "BasePart")
+                                        end
+                                        aI = ao
+                                    end
+                                    aN = aI
+                                    if aN then
+                                        aI, at = pcall(function()
+                                            local Ok = aN
+                                            return Ok.Position
+                                        end)
+                                        ao = aI
+                                        if ao then
+                                            ao = at
+                                        end
+                                        if ao then
+                                            aI = "Y"
+                                            ao = (at.Y > -100)
+                                        end
+                                        if ao then
+                                            aI = "Position"
+                                            ao = (at - am.Position)
+                                            if ao.Magnitude <= az then
+                                                pcall(function()
+                                                    local j = { [1] = aq }
+                                                    local Ou = ReplicatedStorage
+                                                    Ou.CatchBall:FireServer(table.unpack(j))
+                                                end)
+                                                z = tick()
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            continue
+        end
+        aI = slot114()
+        if aI then
+            if (tick() - z) >= aa then
+                local Of = localPlayer
+                at = Of.Character
+                if at then
+                    am = at.FindFirstChild(at, "HumanoidRootPart")
+                    if am then
+                        aI = Workspace
+                        local Oh = aI.GetDescendants
+                        for j, e in ipairs(Oh(aI)) do
+                            local aN = nil
+                            aj = e
+                            local aq = aj
+                            aI = "Name"
+                            local Ov = aq.Name
+                            at = (Ov == "TPS")
+                            if at then
+                                aI = "BasePart"
+                                ag = aq.IsA(aq, "BasePart")
+                                if not ag then
+                                    aI = "Model"
+                                    ag = aq.IsA(aq, "Model")
+                                end
+                                at = ag
+                            end
+                            if at then
+                                local Os = Workspace
+                                aI = "IsDescendantOf"
+                                at = aq.IsDescendantOf(aq, Os)
+                            end
+                            if at then
+                                at = "IsA"
+                                ao = aq.IsA(aq, "BasePart")
+                                if ao then
+                                    ao = aq
+                                end
+                                aI = ao
+                                if not aI then
+                                    at = "PrimaryPart"
+                                    ao = aq.PrimaryPart
+                                    if not ao then
+                                        at = "BasePart"
+                                        ao = aq.FindFirstChildWhichIsA(aq, "BasePart")
+                                    end
+                                    aI = ao
+                                end
+                                aN = aI
+                                if aN then
+                                    aI, at = pcall(function()
+                                        local Ok = aN
+                                        return Ok.Position
+                                    end)
+                                    ao = aI
+                                    if ao then
+                                        ao = at
+                                    end
+                                    if ao then
+                                        aI = "Y"
+                                        ao = (at.Y > -100)
+                                    end
+                                    if ao then
+                                        aI = "Position"
+                                        ao = (at - am.Position)
+                                        if ao.Magnitude <= az then
+                                            pcall(function()
+                                                local j = { [1] = aq }
+                                                local Ou = ReplicatedStorage
+                                                Ou.CatchBall:FireServer(table.unpack(j))
+                                            end)
+                                            z = tick()
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+teamCheckSettings = { [1] = false, [2] = { "Home GK", "Away GK", "-Home GK", "-Away GK" } }
+goalkeeperSettings = {
+    [1] = false,
+    [2] = 25,
+    [3] = 1,
+    [4] = 0,
+    [5] = false,
+    [6] = 0,
+    [7] = 0.7,
+    [8] = 32,
+    [9] = 1.8,
+    [10] = 3.5,
+    [11] = 8,
+    [12] = 0.25,
+    [13] = 5,
+    [14] = 10,
+    [15] = 0.25,
+    [16] = 0.08,
+}
+toolCheckSettings = { [1] = false, [2] = { "GK", "Gk" } }
+ballCheckSettings = { [1] = false, [2] = 10 }
+slot109 = handlers.goalkeeper.passesTeamCheck
+slot9 = handlers.goalkeeper.passesToolCheck
+diveAnimations = {
+    [1] = "rbxassetid://16442628314",
+    [2] = "rbxassetid://16442673035",
+    [3] = "rbxassetid://100418595302523",
+    [4] = "rbxassetid://97922133636415",
+}
+slot106 = handlers.character.getCharacter
+isBallNearLegs = function()
+    local hj
+    local tZ
+    local aa, aA, at, aw, a0, aJ, aj, aT, a_ = nil, nil, nil, nil, nil, nil, nil, nil, nil
+    local OE = localPlayer
+    aA = OE.Character
+    if not aA then
+        return false
+    else
+        aj = {
+            "HumanoidRootPart",
+            "Right Leg",
+            "Left Leg",
+            "RightUpperLeg",
+            "LeftUpperLeg",
+            "RightLowerLeg",
+            "LeftLowerLeg",
+            "Right Foot",
+            "Left Foot",
+            "RightFoot",
+            "LeftFoot",
+        }
+        aa = Workspace
+        local OJ = aa.GetDescendants
+        for f, g in ipairs(OJ(aa)) do
+            aT = g
+            local ah = aT
+            aa = "BasePart"
+            at = "IsA"
+            aw = ah.IsA(ah, "BasePart")
+            if aw then
+                aa = "Name"
+                tZ = ah.Name
+                hj = (tZ == "TPS")
+                aw = hj
+            end
+            if aw then
+                aa = "Parent"
+                aw = ah.Parent
+            end
+            if aw then
+                local OK = Workspace
+                aa = "IsDescendantOf"
+                aw = ah.IsDescendantOf(ah, OK)
+            end
+            if aw then
+                aa, at = pcall(function()
+                    return ah.Position
+                end)
+                aw = aa
+                if aw then
+                    aw = at
+                end
+                if aw then
+                    aa = "Y"
+                    aw = (at.Y > -100)
+                end
+                if aw then
+                    for e, o in ipairs(aj) do
+                        a_ = o
+                        local af = a_
+                        aw = aA.FindFirstChild(aA, af)
+                        aa = aw
+                        if aa then
+                            aa = aw.IsA(aw, "BasePart")
+                        end
+                        if aa then
+                            aa = "Position"
+                            a0 = (aw.Position - at)
+                            aJ = a0.Magnitude
+                            if aJ <= ballCheckSettings[2] then
+                                return true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        return false
+    end
+end
+RunService.Heartbeat:Connect(handlers.goalkeeper.updateBallProximityCheck)
+isBallHeld = function(j)
+    local aS, am, V, aY, au, ax, aQ, aB, af, ai = nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    am = not j
+    if not am then
+        am = not j.Parent
+    end
+    if am then
+        return false
+    else
+        local Pj = Workspace
+        if not j.IsDescendantOf(j, Pj) then
+            return false
+        else
+            local Pd = localPlayer
+            aS = Pd.Character
+            if not aS then
+                return false
+            else
+                af = (if j.IsDescendantOf(j, aS) then 1 else 0)
+                local Ph = (1 - af)
+                aQ = ((3837 * af) + (1300 * Ph))
+                Ph = (1 - af)
+                aB = ((31 * af) + (1428 * Ph))
+                local Pi = (aQ * aB)
+                if ((((aQ * 1760) + (aB * 344)) + Pi) % 16777213) == 6882731 then
+                    return true
+                else
+                    am = function(q)
+                        local a2, ak, W, aU = nil, nil, nil, nil
+                        local OZ = q.GetChildren
+                        for g, j in ipairs(OZ(q)) do
+                            aU = j
+                            local aN = aU
+                            W = aN.IsA(aN, "Weld")
+                            if not W then
+                                W = aN.IsA(aN, "WeldConstraint")
+                            end
+                            if not W then
+                                W = aN.IsA(aN, "Motor6D")
+                            end
+                            if W then
+                                ak = aN.Part0
+                                W = aN.Part1
+                                a2 = ak
+                                if a2 then
+                                    local O5 = aS
+                                    a2 = ak.IsDescendantOf(ak, O5)
+                                end
+                                ak = a2
+                                if not ak then
+                                    a2 = W
+                                    if a2 then
+                                        local O_ = aS
+                                        a2 = W.IsDescendantOf(W, O_)
+                                    end
+                                    ak = a2
+                                end
+                                if ak then
+                                    return true
+                                end
+                            end
+                        end
+                        return false
+                    end
+                    if am(j) then
+                        return true
+                    else
+                        ax = {
+                            "Right Arm",
+                            "Left Arm",
+                            "RightUpperArm",
+                            "LeftUpperArm",
+                            "RightLowerArm",
+                            "LeftLowerArm",
+                            "Right Hand",
+                            "Left Hand",
+                            "RightHand",
+                            "LeftHand",
+                        }
+                        for f, e in ipairs(ax) do
+                            ai = e
+                            local aj = ai
+                            V = aS.FindFirstChild(aS, aj)
+                            am = V
+                            if am then
+                                am = V.IsA(V, "BasePart")
+                            end
+                            if am then
+                                aY = V.Position
+                                au = (aY - j.Position)
+                                aY = au.Magnitude
+                                if aY <= 3 then
+                                    return true
+                                end
+                            end
+                        end
+                        return false
+                    end
+                end
+            end
+        end
+    end
+end
+findDiveTarget = function()
+    local kP
+    local tL
+    local as, aN, X, a6, ae, aJ, ar, ay = nil, nil, nil, nil, nil, nil, nil, nil
+    local Pv = localPlayer
+    aN = Pv.Character
+    if not aN then
+        return nil
+    else
+        a6 = aN.FindFirstChild(aN, "HumanoidRootPart")
+        if not a6 then
+            return nil
+        else
+            as = nil
+            aN = goalkeeperSettings[2]
+            X = Workspace
+            local Po = X.GetDescendants
+            for q, g in ipairs(Po(X)) do
+                ay = g
+                local a4 = ay
+                X = "Name"
+                tL = a4.Name
+                kP = (tL == "TPS")
+                ae = kP
+                if ae then
+                    X = "BasePart"
+                    ae = a4.IsA(a4, "BasePart")
+                end
+                if ae then
+                    local Pr = Workspace
+                    X = "IsDescendantOf"
+                    ae = a4.IsDescendantOf(a4, Pr)
+                end
+                if ae then
+                    X, ae = pcall(function()
+                        return a4.Position
+                    end)
+                    aJ = X
+                    if aJ then
+                        aJ = ae
+                    end
+                    if aJ then
+                        X = "Y"
+                        aJ = (ae.Y > -100)
+                    end
+                    if aJ then
+                        if not isBallHeld(a4) then
+                            X = "Position"
+                            aJ = (ae - a6.Position)
+                            ar = aJ.Magnitude
+                            if ar < aN then
+                                aN = ar
+                                as = a4
+                            end
+                        end
+                    end
+                end
+            end
+            return as
+        end
+    end
+end
+slot80 = handlers.goalkeeper.classifyBallDirection
+slot89 = handlers.goalkeeper.catchBall
+playDiveAnimation = function(j, q, o)
+    local ah, aE, ao, aF, aA = nil, nil, nil, nil, nil
+    aF = j.FindFirstChildOfClass(j, "Animator")
+    if not aF then
+        aA = Instance.new
+        aF = aA("Animator")
+        aF.Parent = j
+    end
+    aA = Instance.new
+    aE = aA("Animation")
+    aE.AnimationId = o
+    ao = nil
+    pcall(function()
+        local Py = aF
+        local Pz = aE
+        ao = Py.LoadAnimation(Py, Pz)
+    end)
+    aE.Destroy(aE)
+    if not ao then
+        return
+    else
+        ao.Play(ao)
+        local PB = os
+        ah = PB.clock()
+        PB = task
+        PB.spawn(function()
+            local ac, an = nil, nil
+            while true do
+                ac = ao
+                if ac then
+                    local PI = ao
+                    ac = PI.IsPlaying
+                end
+                if ac then
+                    local PH = os
+                    ac = ((PH.clock() - ah) < goalkeeperSettings[7])
+                end
+                if ac then
+                    slot89(q)
+                    local PJ = RunService
+                    an = PJ.Heartbeat
+                    an.Wait(an)
+                    continue
+                end
+                break
+            end
+        end)
+        PB = task
+        PB.delay(goalkeeperSettings[7], function()
+            if ao then
+                pcall(function()
+                    local PM = ao
+                    PM.Stop(PM)
+                    PM = ao
+                    PM.Destroy(PM)
+                end)
+            end
+        end)
+    end
+end
+slot13 = handlers.goalkeeper.performDive
+RunService.Heartbeat:Connect(handlers.goalkeeper.updateAutoDive)
+tPSFollowUI = Color3
+aR = tPSFollowUI.fromRGB(255, 0, 0)
+fieldColorSettings = { [1] = aR, [2] = false, [3] = {} }
+Y = handlers.appearance.isFieldSurface
+slot38 = handlers.appearance.captureFieldColors
+applyFieldColor = function(j)
+    local a1, aS, ax = nil, nil, nil
+    a1 = Workspace
+    local PW = a1.GetDescendants
+    for q, e in ipairs(PW(a1)) do
+        ax = e
+        local aE = ax
+        a1 = "BasePart"
+        aS = aE.IsA(aE, "BasePart")
+        if aS then
+            aS = Y(aE)
+        end
+        if aS then
+            pcall(function()
+                aE.Color = j
+            end)
+        end
+    end
+end
+restoreFieldColors = function()
+    local aK, aL, ao = nil, nil, nil
+    local P0 = fieldColorSettings
+    local P1 = P0[3]
+    for g, j in pairs(P1) do
+        aL = g
+        ao = j
+        local aH = aL
+        local az = ao
+        aK = aH
+        if aK then
+            aK = aH.Parent
+        end
+        if aK then
+            pcall(function()
+                aH.Color = az
+            end)
+        end
+    end
+    fieldColorSettings[3] = {}
+end
+avatarSettings = { [1] = false, [2] = "", [3] = nil, [4] = localPlayer.UserId }
+slot99 = handlers.appearance.captureAvatar
+slot48 = handlers.appearance.clearAvatar
+slot98 = handlers.appearance.restoreAvatar
+applyAvatarFromUser = function(r)
+    local a0, aS, aI, a1, aK, Y, aQ, ao, ac, af, aA, au, V, ab, aC =
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil
+    local Qc = localPlayer
+    aI = "Character"
+    a1 = Qc.Character
+    if not a1 then
+        return false, "Sem personagem"
+    else
+        a0 = tonumber(r)
+        au = (if not a0 then 3498 else 3467)
+        V = (if not a0 then 2321 else 3572)
+        local Qw = (if not a0 then 8118858 else 12384124)
+        if ((((au * 3977) + (V * 1405)) + Qw) % 16777213) == 8514196 then
+            aI, aK = pcall(function()
+                local Q6 = Players
+                return Q6.GetUserIdFromNameAsync(Q6, r)
+            end)
+            if not aI then
+                return false, "Nome inválido"
+            else
+                a0 = aK
+                aI, aS = pcall(function()
+                    local Q0 = Players
+                    local Q1 = a0
+                    return Q0.GetHumanoidDescriptionFromUserId(Q0, Q1)
+                end)
+                if not aI then
+                    return false, "Falha ao obter descrição"
+                else
+                    aI, aK = pcall(function()
+                        local Qd = Players
+                        local Qe = aS
+                        local Qi = Enum.HumanoidRigType
+                        return Qd:CreateHumanoidModelFromDescription(Qe, Qi.R6)
+                    end)
+                    if not aI then
+                        return false, "Falha ao criar modelo"
+                    else
+                        slot48()
+                        local Qk = aK.GetChildren
+                        for t, q in ipairs(Qk(aK)) do
+                            ab = q
+                            local W = ab
+                            Y = a1:FindFirstChild(W.Name)
+                            aI = Y
+                            if aI then
+                                aI = Y.IsA(Y, "BasePart")
+                            end
+                            if not not aI then
+                                aI = not (Y.Name == "HumanoidRootPart")
+                            end
+                            if aI then
+                                aQ = W.Color
+                                Y.Color = aQ
+                            end
+                        end
+                        aQ = aK.FindFirstChild(aK, "Head")
+                        ao = a1.FindFirstChild(a1, "Head")
+                        aI = aQ
+                        if aI then
+                            aI = ao
+                        end
+                        if aI then
+                            ac = ao.FindFirstChildOfClass(ao, "Decal")
+                            if ac then
+                                ac.Destroy(ac)
+                            end
+                            ac = aQ.FindFirstChildOfClass(aQ, "Decal")
+                            if ac then
+                                Y = ac.Clone(ac)
+                                Y.Parent = ao
+                            else
+                                Y = Instance.new
+                                af = Y("Decal")
+                                af.Name = "face"
+                                af.Texture = "rbxasset://textures/face.png"
+                                af.Parent = ao
+                            end
+                            ac = ao.FindFirstChildOfClass(ao, "SpecialMesh")
+                            if ac then
+                                ac.Destroy(ac)
+                            end
+                            ac = aQ.FindFirstChildOfClass(aQ, "SpecialMesh")
+                            if not not ac then
+                                Y = ac.Clone(ac)
+                                Y.Parent = ao
+                            end
+                        end
+                        local QH = aK.GetChildren
+                        for e, j in ipairs(QH(aK)) do
+                            aC = j
+                            local a2 = aC
+                            aQ = a2.IsA(a2, "Clothing")
+                            if not aQ then
+                                aQ = a2.IsA(a2, "ShirtGraphic")
+                            end
+                            if not aQ then
+                                aQ = a2.IsA(a2, "BodyColors")
+                            end
+                            if not aQ then
+                                aQ = a2.IsA(a2, "CharacterMesh")
+                            end
+                            if aQ then
+                                Y = a2.Clone(a2)
+                                Y.Parent = a1
+                            else
+                                if a2.IsA(a2, "Accessory") then
+                                    Y = a2.Clone(a2)
+                                    ao = Y.FindFirstChild(Y, "Handle")
+                                    if ao then
+                                        ac = ao.FindFirstChildOfClass(ao, "Attachment")
+                                        if ac then
+                                            aQ = a1:FindFirstChild(ac.Name, true)
+                                            if aQ then
+                                                af = aQ.WorldCFrame
+                                                ao.CFrame = af
+                                                af = Instance.new
+                                                aA = af("Weld")
+                                                aA.Name = "AccessoryWeld"
+                                                aA.Part0 = ao
+                                                af = aQ.Parent
+                                                aA.Part1 = af
+                                                af = ac.CFrame
+                                                aA.C0 = af
+                                                ac = aQ.CFrame
+                                                aA.C1 = ac
+                                                aA.Parent = ao
+                                            end
+                                        end
+                                    end
+                                    Y.Parent = a1
+                                end
+                            end
+                        end
+                        aK.Destroy(aK)
+                        return true, "Sucesso"
+                    end
+                end
+            end
+        else
+            aI, aS = pcall(function()
+                local Q0 = Players
+                local Q1 = a0
+                return Q0.GetHumanoidDescriptionFromUserId(Q0, Q1)
+            end)
+            if not aI then
+                return false, "Falha ao obter descrição"
+            else
+                aI, aK = pcall(function()
+                    local Qd = Players
+                    local Qe = aS
+                    local Qi = Enum.HumanoidRigType
+                    return Qd:CreateHumanoidModelFromDescription(Qe, Qi.R6)
+                end)
+                if not aI then
+                    return false, "Falha ao criar modelo"
+                else
+                    slot48()
+                    local Qk = aK.GetChildren
+                    for t, q in ipairs(Qk(aK)) do
+                        ab = q
+                        local W = ab
+                        Y = a1:FindFirstChild(W.Name)
+                        aI = Y
+                        if aI then
+                            aI = Y.IsA(Y, "BasePart")
+                        end
+                        if not not aI then
+                            aI = not (Y.Name == "HumanoidRootPart")
+                        end
+                        if aI then
+                            aQ = W.Color
+                            Y.Color = aQ
+                        end
+                    end
+                    aQ = aK.FindFirstChild(aK, "Head")
+                    ao = a1.FindFirstChild(a1, "Head")
+                    aI = aQ
+                    if aI then
+                        aI = ao
+                    end
+                    if aI then
+                        ac = ao.FindFirstChildOfClass(ao, "Decal")
+                        if ac then
+                            ac.Destroy(ac)
+                        end
+                        ac = aQ.FindFirstChildOfClass(aQ, "Decal")
+                        if ac then
+                            Y = ac.Clone(ac)
+                            Y.Parent = ao
+                        else
+                            Y = Instance.new
+                            af = Y("Decal")
+                            af.Name = "face"
+                            af.Texture = "rbxasset://textures/face.png"
+                            af.Parent = ao
+                        end
+                        ac = ao.FindFirstChildOfClass(ao, "SpecialMesh")
+                        if ac then
+                            ac.Destroy(ac)
+                        end
+                        ac = aQ.FindFirstChildOfClass(aQ, "SpecialMesh")
+                        if not not ac then
+                            Y = ac.Clone(ac)
+                            Y.Parent = ao
+                        end
+                    end
+                    local QH = aK.GetChildren
+                    for e, j in ipairs(QH(aK)) do
+                        aC = j
+                        local a2 = aC
+                        aQ = a2.IsA(a2, "Clothing")
+                        if not aQ then
+                            aQ = a2.IsA(a2, "ShirtGraphic")
+                        end
+                        if not aQ then
+                            aQ = a2.IsA(a2, "BodyColors")
+                        end
+                        if not aQ then
+                            aQ = a2.IsA(a2, "CharacterMesh")
+                        end
+                        if aQ then
+                            Y = a2.Clone(a2)
+                            Y.Parent = a1
+                        else
+                            if a2.IsA(a2, "Accessory") then
+                                Y = a2.Clone(a2)
+                                ao = Y.FindFirstChild(Y, "Handle")
+                                if ao then
+                                    ac = ao.FindFirstChildOfClass(ao, "Attachment")
+                                    if ac then
+                                        aQ = a1:FindFirstChild(ac.Name, true)
+                                        if aQ then
+                                            af = aQ.WorldCFrame
+                                            ao.CFrame = af
+                                            af = Instance.new
+                                            aA = af("Weld")
+                                            aA.Name = "AccessoryWeld"
+                                            aA.Part0 = ao
+                                            af = aQ.Parent
+                                            aA.Part1 = af
+                                            af = ac.CFrame
+                                            aA.C0 = af
+                                            ac = aQ.CFrame
+                                            aA.C1 = ac
+                                            aA.Parent = ao
+                                        end
+                                    end
+                                end
+                                Y.Parent = a1
+                            end
+                        end
+                    end
+                    aK.Destroy(aK)
+                    return true, "Sucesso"
+                end
+            end
+        end
+    end
+end
+aU = aX:Tab({ ["Title"] = "Reach", ["Icon"] = "target" })
+aV = aX:Tab({ ["Title"] = "Helps", ["Icon"] = "help-circle" })
+updateReach = aX:Tab({ ["Title"] = "Visual", ["Icon"] = "eye" })
+slot29 = aX:Tab({ ["Title"] = "Ball", ["Icon"] = "circle-dot" })
+aY = aX:Tab({ ["Title"] = "Goalkeeper", ["Icon"] = "hand" })
+aZ = aX:Tab({ ["Title"] = "Player", ["Icon"] = "user" })
+slot107 = aX:Tab({ ["Title"] = "Misc", ["Icon"] = "settings-2" })
+a_ = aX:Tab({ ["Title"] = "Settings", ["Icon"] = "settings" })
+aU:Toggle({ ["Title"] = "Reach", ["Value"] = false, ["Callback"] = handlers.reach.setReachEnabled })
+slot83 = { ["Min"] = 1, ["Max"] = 15, ["Default"] = 10 }
+Lr = handlers.reach.setDistance
+local Ro
+local Rp = slot83
+aU:Slider({ ["Title"] = "Studs", ["Step"] = 1, ["Value"] = Rp, ["Callback"] = Lr })
+aU:Toggle({ ["Title"] = "Reach Hide", ["Value"] = false, ["Callback"] = handlers.reach.setReachHideEnabled })
+aV:Toggle({
+    ["Title"] = "Tot (Mobile)",
+    ["Value"] = false,
+    ["Callback"] = handlers.mobile.setTotMobileEnabled,
+})
+aV:Toggle({
+    ["Title"] = "Control Ball (Mobile)",
+    ["Value"] = false,
+    ["Callback"] = handlers.mobile.setControlBallMobileEnabled,
+})
+aV:Toggle({
+    ["Title"] = "Auto Hambolo (PC)",
+    ["Value"] = false,
+    ["Callback"] = handlers.input.setAutoHamboloPCEnabled,
+})
+aV:Toggle({ ["Title"] = "Auto Ball", ["Value"] = false, ["Callback"] = handlers.follow.setAutoBallEnabled })
+a0 = { ["Min"] = 0, ["Max"] = 8, ["Default"] = 0 }
+Ro = handlers.follow.setAutoBallDistance
+tPSFollowUI = a0
+aV:Slider({ ["Title"] = "Auto Ball Distance", ["Step"] = 1, ["Value"] = tPSFollowUI, ["Callback"] = Ro })
+updateReach:Toggle({
+    ["Title"] = "Predict Ball",
+    ["Value"] = false,
+    ["Callback"] = handlers.visuals.setPredictBallEnabled,
+})
+updateReach:Toggle({
+    ["Title"] = "Fire Ball",
+    ["Value"] = false,
+    ["Callback"] = handlers.visuals.setFireBallEnabled,
+})
+a_ = { ["Min"] = 1, ["Max"] = 20, ["Default"] = 5 }
+Lr = handlers.visuals.setFireBallSize
+Rp = a_
+updateReach:Slider({ ["Title"] = "Fire Ball Size", ["Step"] = 1, ["Value"] = Rp, ["Callback"] = Lr })
+a_ = { ["Min"] = 1, ["Max"] = 20, ["Default"] = 8 }
+Ro = handlers.visuals.setFireBallHeat
+tPSFollowUI = a_
+updateReach:Slider({ ["Title"] = "Fire Ball Heat", ["Step"] = 1, ["Value"] = tPSFollowUI, ["Callback"] = Ro })
+tPSFollowUI = slot29
+tPSFollowUI:Toggle({
+    ["Title"] = "Shield",
+    ["Value"] = false,
+    ["Callback"] = handlers.shield.setShieldEnabled,
+})
+tPSFollowUI = slot29
+aX = { ["Min"] = 1, ["Max"] = 8, ["Default"] = 5 }
+Ro = handlers.shield.setShieldStuds
+local RC = aX
+tPSFollowUI:Slider({ ["Title"] = "Shield Studs", ["Step"] = 1, ["Value"] = RC, ["Callback"] = Ro })
+tPSFollowUI = slot29
+tPSFollowUI:Toggle({
+    ["Title"] = "Power Shoot (Most Op)",
+    ["Value"] = false,
+    ["Callback"] = handlers.power.setPowerShootMostOpEnabled,
+})
+tPSFollowUI = slot29
+aX = { ["Min"] = 1, ["Max"] = 100, ["Default"] = 10 }
+Rp = handlers.power.setPowerShootForce
+Lr = aX
+tPSFollowUI:Slider({ ["Title"] = "Power Shoot Force", ["Step"] = 1, ["Value"] = Lr, ["Callback"] = Rp })
+tPSFollowUI = slot29
+aX = { ["Min"] = 1, ["Max"] = 100, ["Default"] = 10 }
+Ro = handlers.power.setPowerShootSpeed
+RC = aX
+tPSFollowUI:Slider({ ["Title"] = "Power Shoot Speed", ["Step"] = 1, ["Value"] = RC, ["Callback"] = Ro })
+tPSFollowUI = slot29
+tPSFollowUI:Toggle({
+    ["Title"] = "Teleport Ball (Most Op)",
+    ["Value"] = false,
+    ["Callback"] = handlers.teleport.setTeleportBallMostOpEnabled,
+})
+tPSFollowUI = slot29
+tPSFollowUI:Toggle({
+    ["Title"] = "Magnet Ball",
+    ["Value"] = false,
+    ["Callback"] = handlers.magnet.setMagnetBallEnabled,
+})
+tPSFollowUI = slot29
+aX = { ["Min"] = 10, ["Max"] = 500, ["Default"] = 100 }
+Rp = handlers.magnet.setMagnetSpeed
+Lr = aX
+tPSFollowUI:Slider({ ["Title"] = "Magnet Speed", ["Step"] = 10, ["Value"] = Lr, ["Callback"] = Rp })
+tPSFollowUI = slot29
+tPSFollowUI:Toggle({
+    ["Title"] = "Ball Curve Changer",
+    ["Value"] = false,
+    ["Callback"] = handlers.curve.setBallCurveChangerEnabled,
+})
+tPSFollowUI = slot29
+aX = { ["Min"] = 1, ["Max"] = 100, ["Default"] = 50 }
+Ro = handlers.curve.setCurveSpeed
+RC = aX
+tPSFollowUI:Slider({ ["Title"] = "Curve Speed", ["Step"] = 1, ["Value"] = RC, ["Callback"] = Ro })
+tPSFollowUI = slot29
+aX = { ["Min"] = 1, ["Max"] = 100, ["Default"] = 50 }
+Rp = handlers.curve.setCurveForce
+Lr = aX
+tPSFollowUI:Slider({ ["Title"] = "Curve Force", ["Step"] = 1, ["Value"] = Lr, ["Callback"] = Rp })
+aY:Toggle({
+    ["Title"] = "Auto catch",
+    ["Value"] = false,
+    ["Callback"] = handlers.goalkeeper.setAutoCatchEnabled,
+})
+slot29 = { ["Min"] = 0.1, ["Max"] = 10, ["Default"] = 1 }
+Lr = handlers.goalkeeper.setCooldown
+Rp = slot29
+aY:Slider({ ["Title"] = "Cooldown", ["Step"] = 0.1, ["Value"] = Rp, ["Callback"] = Lr })
+slot29 = { ["Min"] = 1, ["Max"] = 20, ["Default"] = 10 }
+Ro = handlers.goalkeeper.setCatchDistance
+tPSFollowUI = slot29
+aY:Slider({ ["Title"] = "Studs", ["Step"] = 1, ["Value"] = tPSFollowUI, ["Callback"] = Ro })
+aY:Toggle({
+    ["Title"] = "Auto Dive",
+    ["Value"] = false,
+    ["Callback"] = handlers.goalkeeper.setAutoDiveEnabled,
+})
+slot29 = { ["Min"] = 1, ["Max"] = 25, ["Default"] = 25 }
+Lr = handlers.goalkeeper.setAutoDiveStuds
+Rp = slot29
+aY:Slider({ ["Title"] = "Auto Dive Studs", ["Step"] = 1, ["Value"] = Rp, ["Callback"] = Lr })
+slot29 = { ["Min"] = 0.1, ["Max"] = 5, ["Default"] = 1 }
+Ro = handlers.goalkeeper.setAutoDiveDelay
+tPSFollowUI = slot29
+aY:Slider({ ["Title"] = "Auto Dive Delay", ["Step"] = 0.1, ["Value"] = tPSFollowUI, ["Callback"] = Ro })
+aY:Toggle({
+    ["Title"] = "Ball Check",
+    ["Value"] = false,
+    ["Callback"] = handlers.goalkeeper.setBallCheckEnabled,
+})
+aY:Toggle({
+    ["Title"] = "Team Check",
+    ["Value"] = false,
+    ["Callback"] = handlers.goalkeeper.setTeamCheckEnabled,
+})
+aY:Toggle({
+    ["Title"] = "Tool Check",
+    ["Value"] = false,
+    ["Callback"] = handlers.goalkeeper.setToolCheckEnabled,
+})
+aZ:Input({
+    ["Title"] = "Name",
+    ["Value"] = "",
+    ["Placeholder"] = "Username ou User ID",
+    ["Callback"] = handlers.appearance.setAvatarName,
+})
+aZ:Toggle({
+    ["Title"] = "Avatar Stolen",
+    ["Value"] = false,
+    ["Callback"] = handlers.appearance.setAvatarStolenEnabled,
+})
+tPSFollowUI = slot107
+slot29 = { "Monika", "Sakura", "Hatsune miku", "Cartoon" }
+Rp = handlers.appearance.setSkyboxChanger
+RC = slot29
+tPSFollowUI:Dropdown({
+    ["Title"] = "Skybox Changer",
+    ["Values"] = RC,
+    ["Value"] = "Monika",
+    ["Callback"] = Rp,
+})
+tPSFollowUI = slot107
+tPSFollowUI:Toggle({
+    ["Title"] = "Skybox Changer",
+    ["Value"] = false,
+    ["Callback"] = handlers.appearance.setSkyboxChangerEnabled,
+})
+tPSFollowUI = slot107
+RC = Color3
+aU = RC.fromRGB(255, 0, 0)
+Rp = handlers.appearance.setColorGram
+Ro = aU
+tPSFollowUI:Colorpicker({ ["Title"] = "Color Gram", ["Value"] = Ro, ["Callback"] = Rp })
+tPSFollowUI = slot107
+tPSFollowUI:Toggle({
+    ["Title"] = "Color",
+    ["Value"] = false,
+    ["Callback"] = handlers.appearance.setColorEnabled,
+})
+tPSFollowUI = slot107
+tPSFollowUI:Toggle({
+    ["Title"] = "Stretched Screen",
+    ["Value"] = false,
+    ["Callback"] = handlers.camera.setStretchedScreenEnabled,
+})
+tPSFollowUI = slot107
+slot29 = { ["Min"] = 1, ["Max"] = 90, ["Default"] = 65 }
+Rp = handlers.camera.setStretchedResolution
+Lr = slot29
+tPSFollowUI:Slider({ ["Title"] = "Stretched Resolution", ["Step"] = 1, ["Value"] = Lr, ["Callback"] = Rp })
